@@ -1,512 +1,977 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Döner & Co — Kebab House</title>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
-      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>SPITFIRE — Kebab House</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+
+<script type="importmap">
+{
+  "imports": {
+    "three":          "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/":  "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
   }
-  </script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+}
+</script>
 
-    :root {
-      --bg:    #0c0a08;
-      --gold:  #c8a96e;
-      --cream: #f0ebe0;
-      --muted: #7a7060;
-      --line:  rgba(200,169,110,0.18);
-    }
+<style>
+  :root {
+    --bg:        #14100d;
+    --bg-2:      #1c1612;
+    --fg:        #f1e9d8;
+    --fg-dim:    #a89a85;
+    --fg-faint:  #5a5044;
+    --paprika:   oklch(0.66 0.17 38);
+    --mustard:   oklch(0.78 0.13 82);
+    --line:      rgba(241, 233, 216, 0.10);
+    --line-2:    rgba(241, 233, 216, 0.22);
+  }
 
-    html { scroll-behavior: smooth; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--bg); color: var(--fg); }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'Space Grotesk', sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    background:
+      radial-gradient(ellipse 110% 60% at 50% 110%, oklch(0.40 0.16 38 / 0.55), transparent 60%),
+      radial-gradient(ellipse 80%  50% at 50% -10%, oklch(0.30 0.06 60 / 0.40), transparent 65%),
+      var(--bg);
+    background-attachment: fixed;
+  }
 
-    body {
-      background: var(--bg);
-      color: var(--cream);
-      font-family: 'Montserrat', sans-serif;
-      overflow-x: hidden;
-    }
+  body::after {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    z-index: 9;
+    opacity: 0.06;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/></filter><rect width='100%' height='100%' filter='url(%23n)' opacity='0.6'/></svg>");
+  }
 
-    /* ── Canvas (fixed, behind everything) ── */
-    #c {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100vw; height: 100vh;
-      z-index: 1;
-      pointer-events: none;
-      will-change: opacity, transform;
-    }
+  a { color: inherit; text-decoration: none; }
+  ::selection { background: var(--paprika); color: var(--bg); }
 
-    /* ── Hero overlay ── */
-    .hero {
-      position: relative;
-      height: 100vh;
-      z-index: 5;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: space-between;
-      padding: 4rem 2rem;
-      pointer-events: none;
-    }
+  /* ── KEBAB STAGE ── */
+  .stage {
+    position: fixed; inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
+  .stage canvas { width: 100%; height: 100%; display: block; }
 
-    .hero-top {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    .hero-tag {
-      font-size: 0.65rem;
-      letter-spacing: 0.38em;
-      text-transform: uppercase;
-      color: var(--gold);
-      opacity: 0;
-      animation: fadeUp 0.8s 0.4s forwards;
-    }
-    .hero-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 300;
-      font-size: clamp(3.2rem, 9vw, 6.5rem);
-      letter-spacing: -0.02em;
-      text-align: center;
-      line-height: 1;
-      opacity: 0;
-      animation: fadeUp 0.9s 0.6s forwards;
-    }
-    .hero-title em { font-style: normal; color: var(--gold); }
+  .floor-glow {
+    position: absolute;
+    left: 50%; bottom: 4%;
+    transform: translateX(-50%);
+    width: 60vmin; height: 14vmin;
+    border-radius: 50%;
+    background: radial-gradient(ellipse at center, oklch(0.55 0.20 38 / 0.45), transparent 70%);
+    filter: blur(20px);
+    pointer-events: none;
+  }
 
-    .hero-bottom {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.75rem;
-    }
-    .hero-sub {
-      font-size: 0.68rem;
-      letter-spacing: 0.32em;
-      text-transform: uppercase;
-      color: var(--muted);
-      opacity: 0;
-      animation: fadeUp 0.8s 0.8s forwards;
-    }
-    .scroll-cue {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 0.5rem;
-      color: var(--muted);
-      font-size: 0.6rem;
-      letter-spacing: 0.25em;
-      text-transform: uppercase;
-      opacity: 0;
-      animation: fadeIn 1s 2.2s forwards;
-    }
-    .scroll-line {
-      width: 1px;
-      height: 44px;
-      background: linear-gradient(to bottom, var(--muted), transparent);
-      animation: pulseLine 2s ease-in-out infinite;
-    }
-    @keyframes pulseLine {
-      0%,100% { transform: scaleY(1);    opacity: 0.45; }
-      50%      { transform: scaleY(1.2); opacity: 1;    }
-    }
+  /* ── TOP BAR ── */
+  header.top {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 50;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    padding: 20px 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    border-bottom: 1px solid var(--line);
+    background: linear-gradient(to bottom, rgba(20,16,13,0.85), rgba(20,16,13,0.55) 60%, transparent);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
+  }
+  header.top .logo {
+    font-family: 'Anton', sans-serif;
+    font-size: 22px;
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    color: var(--fg);
+    text-transform: uppercase;
+    line-height: 1;
+  }
+  header.top .meta {
+    display: flex; align-items: center; gap: 14px;
+    justify-self: center;
+  }
+  header.top .meta .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: oklch(0.65 0.18 145);
+    box-shadow: 0 0 12px oklch(0.65 0.18 145 / 0.7);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.45; }
+  }
+  header.top .links {
+    display: flex; align-items: center; gap: 22px;
+    justify-self: end;
+  }
+  header.top .links a { transition: color 0.2s ease; }
+  header.top .links a:hover { color: var(--fg); }
+  header.top .links a.tel { color: var(--fg); }
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(22px); }
-      to   { opacity: 1; transform: translateY(0);   }
-    }
-    @keyframes fadeIn { to { opacity: 1; } }
+  /* ── ROTATION HUD ── */
+  .hud {
+    position: fixed;
+    right: 28px; top: 50%;
+    transform: translateY(-50%);
+    z-index: 40;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--fg-dim);
+    text-transform: uppercase;
+    text-align: right;
+    line-height: 1.6;
+    pointer-events: none;
+  }
+  .hud .big {
+    font-size: 28px;
+    color: var(--fg);
+    letter-spacing: 0.04em;
+    margin-bottom: 4px;
+  }
+  .hud .track {
+    width: 1px; height: 120px;
+    background: var(--line-2);
+    margin: 14px 0 14px auto;
+    position: relative;
+  }
+  .hud .track::after {
+    content: "";
+    position: absolute;
+    left: -2px; top: 0;
+    width: 5px; height: 16px;
+    background: var(--paprika);
+    transform: translateY(var(--prog, 0));
+    transition: transform 0.3s ease;
+  }
 
-    /* ── Menu section ── */
-    .menu-section {
-      position: relative;
-      z-index: 10;
-      background: var(--bg);
-      padding: 8rem 2rem 6rem;
-    }
+  /* ── LAYOUT ── */
+  main { position: relative; z-index: 2; }
 
-    .menu-inner { max-width: 1100px; margin: 0 auto; }
+  section {
+    position: relative;
+    padding: 110px 56px 80px;
+    max-width: 1680px;
+    margin: 0 auto;
+  }
 
-    .menu-header {
-      display: flex;
-      align-items: center;
-      gap: 2rem;
-      margin-bottom: 5rem;
-    }
-    .menu-header-line { flex: 1; height: 1px; background: var(--line); }
-    .menu-header-text { text-align: center; flex-shrink: 0; }
-    .menu-tag {
-      font-size: 0.65rem;
-      letter-spacing: 0.35em;
-      text-transform: uppercase;
-      color: var(--gold);
-      display: block;
-      margin-bottom: 0.5rem;
-    }
-    .menu-title {
-      font-family: 'Cormorant Garamond', serif;
-      font-weight: 300;
-      font-size: clamp(2.5rem, 5vw, 4rem);
-    }
+  .sec-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    margin-bottom: 60px;
+  }
+  .sec-label::before, .sec-label::after {
+    content: ""; flex: 1; height: 1px; background: var(--line);
+  }
+  .sec-label .num { color: var(--paprika); font-weight: 500; }
 
-    .menu-category { margin-bottom: 4rem; }
+  /* ── HERO ── */
+  .hero {
+    min-height: 100vh;
+    padding-top: 92px;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    align-items: stretch;
+  }
 
-    .category-label {
-      font-size: 0.65rem;
-      letter-spacing: 0.35em;
-      text-transform: uppercase;
-      color: var(--gold);
-      margin-bottom: 1.5rem;
-      display: flex;
-      align-items: center;
-      gap: 1rem;
-    }
-    .category-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--line);
-    }
+  .hero-strip {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    padding: 18px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .hero-strip .pill {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 4px 10px;
+    border: 1px solid var(--line-2);
+    border-radius: 100px;
+    color: var(--fg);
+  }
+  .hero-strip .pill::before {
+    content: "";
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--paprika);
+  }
 
-    .menu-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    }
+  .hero-title {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    line-height: 0.82;
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    color: var(--fg);
+    align-self: center;
+    width: 100%;
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 14vw;
+    font-size: clamp(96px, 19vw, 280px);
+    pointer-events: none;
+  }
+  .hero-title .l { text-align: right; }
+  .hero-title .r { text-align: left; }
+  .hero-title .center { width: 14vw; }
 
-    .menu-item {
-      padding: 1.75rem 0;
-      border-bottom: 1px solid var(--line);
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 1.5rem;
-      transition: padding-left 0.3s ease;
-    }
-    .menu-item:hover { padding-left: 0.8rem; }
+  .hero-foot {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: end;
+    gap: 30px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    padding-top: 24px;
+  }
+  .hero-foot .tag {
+    max-width: 26ch;
+    color: var(--fg);
+    line-height: 1.5;
+    font-family: 'Space Grotesk', sans-serif;
+    font-size: 14px;
+    letter-spacing: 0;
+    text-transform: none;
+  }
+  .hero-foot .scroll-cue {
+    display: inline-flex; align-items: center; gap: 10px;
+    color: var(--fg);
+    justify-self: center;
+  }
+  .hero-foot .scroll-cue .arrow {
+    display: inline-block;
+    animation: bob 1.6s ease-in-out infinite;
+  }
+  @keyframes bob {
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(6px); }
+  }
+  .hero-foot .right-meta {
+    text-align: right;
+    line-height: 1.7;
+  }
+  .hero-foot .right-meta b { color: var(--fg); font-weight: 500; }
 
-    .menu-grid .menu-item:nth-child(1),
-    .menu-grid .menu-item:nth-child(2) { border-top: 1px solid var(--line); }
-    @media (max-width: 649px) {
-      .menu-grid .menu-item:nth-child(2) { border-top: none; }
-    }
+  /* ── ABOUT ── */
+  .about {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .about-grid {
+    display: grid;
+    grid-template-columns: 5fr 4fr 5fr;
+    gap: 60px;
+    align-items: start;
+  }
+  .about h2 {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    font-size: clamp(60px, 8vw, 128px);
+    line-height: 0.86;
+    letter-spacing: -0.015em;
+    text-transform: uppercase;
+  }
+  .about h2 em { font-style: normal; color: var(--paprika); }
+  .about-right {
+    grid-column: 3;
+    display: flex;
+    flex-direction: column;
+    gap: 22px;
+    font-size: 17px;
+    line-height: 1.55;
+    color: var(--fg);
+    padding-top: 14px;
+  }
+  .about-right p { max-width: 38ch; }
+  .about-right p:first-child::first-letter {
+    font-family: 'Anton', sans-serif;
+    font-size: 64px;
+    line-height: 0.85;
+    float: left;
+    padding: 6px 14px 0 0;
+    color: var(--mustard);
+  }
+  .about-right small {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    display: block;
+    margin-top: 8px;
+  }
 
-    .item-name {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.25rem;
-      font-weight: 600;
-      margin-bottom: 0.3rem;
-    }
-    .item-desc {
-      font-size: 0.75rem;
-      color: var(--muted);
-      line-height: 1.6;
-    }
-    .item-price {
-      font-family: 'Cormorant Garamond', serif;
-      font-size: 1.1rem;
-      color: var(--gold);
-      white-space: nowrap;
-      margin-top: 0.1rem;
-    }
+  .about-stats {
+    margin-top: 80px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+  }
+  .about-stats .stat {
+    padding: 26px 22px;
+    border-right: 1px solid var(--line);
+  }
+  .about-stats .stat:last-child { border-right: 0; }
+  .about-stats .num {
+    font-family: 'Anton', sans-serif;
+    font-size: 56px;
+    line-height: 0.9;
+    color: var(--fg);
+    margin-bottom: 6px;
+  }
+  .about-stats .num small { font-size: 18px; color: var(--mustard); margin-left: 4px; }
+  .about-stats .lab {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
 
-    footer {
-      border-top: 1px solid var(--line);
-      padding: 3rem 2rem;
-      text-align: center;
-      color: var(--muted);
-      font-size: 0.68rem;
-      letter-spacing: 0.2em;
-      text-transform: uppercase;
-    }
-    footer span { color: var(--gold); }
-  </style>
+  /* ── MENU ── */
+  .menu { padding-top: 60px; }
+  .menu-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: end;
+    margin-bottom: 50px;
+    gap: 30px;
+  }
+  .menu-head h2 {
+    font-family: 'Anton', sans-serif;
+    font-weight: 400;
+    font-size: clamp(60px, 9vw, 144px);
+    line-height: 0.85;
+    letter-spacing: -0.015em;
+    text-transform: uppercase;
+  }
+  .menu-head h2 em { font-style: normal; color: var(--paprika); }
+  .menu-head .note {
+    max-width: 28ch;
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--fg-dim);
+    text-align: right;
+    padding-bottom: 14px;
+  }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 80px;
+  }
+
+  .menu-cat { margin-bottom: 56px; }
+  .menu-cat h3 {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--mustard);
+    margin-bottom: 20px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line-2);
+    font-weight: 500;
+    display: flex; justify-content: space-between;
+  }
+  .menu-cat h3 span:last-child { color: var(--fg-faint); }
+
+  .item {
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    align-items: baseline;
+    gap: 14px;
+    padding: 14px 4px;
+    border-bottom: 1px solid var(--line);
+    transition: padding 0.25s ease, background 0.25s ease;
+    cursor: default;
+  }
+  .item:hover {
+    padding-left: 14px;
+    background: linear-gradient(to right, oklch(0.66 0.17 38 / 0.10), transparent 80%);
+  }
+  .item:hover .name  { color: var(--fg); }
+  .item:hover .price { color: var(--paprika); }
+
+  .item .idx {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--fg-faint);
+    letter-spacing: 0.05em;
+    width: 28px;
+  }
+  .item .name {
+    font-size: 19px;
+    line-height: 1.25;
+    color: var(--fg);
+    transition: color 0.2s ease;
+  }
+  .item .name .desc {
+    display: block;
+    font-size: 13px;
+    color: var(--fg-dim);
+    margin-top: 4px;
+    font-weight: 300;
+  }
+  .item .price {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 17px;
+    color: var(--fg);
+    transition: color 0.2s ease;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .item .price small { font-size: 11px; color: var(--fg-dim); margin-left: 2px; }
+  .item .badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    margin-left: 8px;
+    background: var(--paprika);
+    color: var(--bg);
+    border-radius: 2px;
+    vertical-align: middle;
+  }
+  .item .badge.veg { background: oklch(0.62 0.16 145); }
+  .item .badge.new { background: var(--mustard); }
+
+  .menu-foot {
+    display: flex; justify-content: space-between; align-items: center;
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line-2);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+
+  /* ── CONTACT ── */
+  .contact {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 60px;
+    align-items: start;
+  }
+
+  .contact-block { margin-bottom: 38px; }
+  .contact-block small {
+    display: block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+    margin-bottom: 12px;
+  }
+  .contact-block .big {
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(28px, 3.4vw, 52px);
+    line-height: 1;
+    letter-spacing: -0.01em;
+    color: var(--fg);
+    text-transform: uppercase;
+    display: inline-block;
+    transition: color 0.2s ease, transform 0.3s ease;
+  }
+  .contact-block a.big:hover { color: var(--paprika); transform: translateX(4px); }
+  .contact-block p { font-size: 18px; line-height: 1.5; color: var(--fg); }
+  .contact-block .row {
+    display: grid;
+    grid-template-columns: 5ch 1fr;
+    gap: 12px;
+    padding: 6px 0;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    letter-spacing: 0.04em;
+    color: var(--fg);
+  }
+  .contact-block .row span:first-child { color: var(--fg-dim); }
+
+  .contact-foot {
+    margin-top: 80px;
+    padding-top: 22px;
+    border-top: 1px solid var(--line);
+    display: flex; justify-content: space-between;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--fg-dim);
+  }
+
+  .farewell {
+    margin-top: 80px;
+    text-align: center;
+    font-family: 'Anton', sans-serif;
+    font-size: clamp(80px, 16vw, 240px);
+    line-height: 0.85;
+    color: var(--fg);
+    letter-spacing: -0.02em;
+    text-transform: uppercase;
+    opacity: 0.92;
+  }
+  .farewell em { font-style: normal; color: var(--paprika); }
+
+  .reveal {
+    opacity: 0;
+    transform: translateY(24px);
+    transition: opacity 0.8s ease, transform 0.8s ease;
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 900px) {
+    section { padding: 90px 22px 60px; }
+    header.top { grid-template-columns: 1fr auto; padding: 14px 18px; gap: 14px; }
+    header.top .meta { display: none; }
+    header.top .links { gap: 14px; font-size: 10px; }
+    .hud { display: none; }
+    .hero-title { gap: 0; grid-template-columns: 1fr; }
+    .hero-title .l, .hero-title .r { text-align: center; }
+    .hero-title .center { display: none; }
+    .hero-foot { grid-template-columns: 1fr; text-align: center; }
+    .hero-foot .right-meta { text-align: center; }
+    .hero-strip { flex-direction: column; gap: 8px; }
+    .about-grid { grid-template-columns: 1fr; gap: 30px; }
+    .about-right { grid-column: 1; }
+    .about-stats { grid-template-columns: repeat(2, 1fr); }
+    .about-stats .stat { border-right: 0; }
+    .about-stats .stat:nth-child(1),
+    .about-stats .stat:nth-child(2) { border-bottom: 1px solid var(--line); }
+    .about-stats .stat:nth-child(odd) { border-right: 1px solid var(--line); }
+    .menu-grid { grid-template-columns: 1fr; gap: 0; }
+    .menu-head { grid-template-columns: 1fr; }
+    .menu-head .note { text-align: left; }
+    .contact-grid { grid-template-columns: 1fr; }
+    .contact-grid .center-spacer { display: none; }
+  }
+</style>
 </head>
 <body>
 
-  <canvas id="c"></canvas>
+<!-- TOP BAR -->
+<header class="top">
+  <a class="logo" href="#">SPITFIRE</a>
+  <div class="meta">
+    <span class="dot"></span>
+    <span>now open · until 23:00</span>
+  </div>
+  <div class="links">
+    <a class="tel" href="tel:+442079460000">+44 20 7946 0000</a>
+    <a href="https://instagram.com/spitfire.kebab" target="_blank" rel="noopener">@spitfire.kebab ↗</a>
+  </div>
+</header>
 
-  <!-- ── Hero ── -->
+<!-- 3D KEBAB STAGE -->
+<div class="stage" aria-hidden="true">
+  <canvas id="kebab"></canvas>
+  <div class="floor-glow"></div>
+</div>
+
+<!-- ROTATION HUD -->
+<div class="hud" aria-hidden="true">
+  <div>ROTATION</div>
+  <div class="big" id="rot-readout">000°</div>
+  <div class="track" id="prog-track"></div>
+  <div>SCROLL ↓</div>
+</div>
+
+<main>
+
+  <!-- ════ HERO ════ -->
   <section class="hero">
-    <div class="hero-top">
-      <div class="hero-tag">Est. 2024 &middot; Istanbul-Style Street Food</div>
-      <h1 class="hero-title">Döner<em> &amp; Co</em></h1>
+    <div class="hero-strip">
+      <span>est. 2024 · London</span>
+      <span class="pill">FIRE-CARVED MEAT</span>
+      <span>№ 01 / START</span>
     </div>
-    <div class="hero-bottom">
-      <p class="hero-sub">Charcoal &middot; Fire &middot; Tradition</p>
+
+    <h1 class="hero-title">
+      <span class="l">SPIT</span>
+      <span class="center"></span>
+      <span class="r">FIRE</span>
+    </h1>
+
+    <div class="hero-foot">
+      <div class="tag">
+        A kebab house on Brick Lane.<br>Marinated overnight, spun over coals, carved straight into flatbread.
+      </div>
       <div class="scroll-cue">
-        <span>Menu</span>
-        <div class="scroll-line"></div>
+        <span class="arrow">↓</span>
+        <span>SCROLL — KEBAB SPINS</span>
+        <span class="arrow">↓</span>
+      </div>
+      <div class="right-meta">
+        <b>45 BRICK LANE</b><br>
+        MON–THU &nbsp;11:00&nbsp;→&nbsp;23:00<br>
+        FRI–SUN &nbsp;11:00&nbsp;→&nbsp;02:00
       </div>
     </div>
   </section>
 
-  <!-- ── Menu ── -->
-  <section class="menu-section">
-    <div class="menu-inner">
+  <!-- ════ ABOUT ════ -->
+  <section class="about">
+    <div class="sec-label reveal">
+      <span class="num">02</span>
+      <span>ABOUT US</span>
+    </div>
 
-      <div class="menu-header">
-        <div class="menu-header-line"></div>
-        <div class="menu-header-text">
-          <span class="menu-tag">Our Selection</span>
-          <h2 class="menu-title">The Menu</h2>
-        </div>
-        <div class="menu-header-line"></div>
+    <div class="about-grid">
+      <h2 class="reveal">MEAT.<br>FIRE.<br><em>FLATBREAD.</em></h2>
+      <div></div>
+      <div class="about-right">
+        <p class="reveal">Seven years we've been spinning marinated meat over live coals and carving it straight into warm, freshly baked flatbread. No pre-packed ingredients, no yesterday's prep.</p>
+        <p class="reveal">Head chef Emre came from Istanbul with his grandmother's recipe — and agreed to share it on one condition: the marinade is mixed every evening, the meat is threaded every morning.</p>
+        <small class="reveal">— Time Out London, November 2025</small>
       </div>
+    </div>
 
-      <div class="menu-category">
-        <div class="category-label">Signatures</div>
-        <div class="menu-grid">
-          <div class="menu-item">
-            <div class="item-info">
-              <div class="item-name">Classic Döner</div>
-              <div class="item-desc">Slow-roasted lamb &amp; beef, shredded to order, warm pita, white sauce</div>
-            </div>
-            <div class="item-price">€8.50</div>
-          </div>
-          <div class="menu-item">
-            <div class="item-info">
-              <div class="item-name">Shish Kebab</div>
-              <div class="item-desc">Charcoal-grilled skewers, sumac onion, roasted tomato, flatbread</div>
-            </div>
-            <div class="item-price">€12.00</div>
-          </div>
-          <div class="menu-item">
-            <div class="item-info">
-              <div class="item-name">Wrap</div>
-              <div class="item-desc">Döner meat, crisp greens, tomato, pickled cabbage, garlic sauce in lavash</div>
-            </div>
-            <div class="item-price">€9.00</div>
-          </div>
-          <div class="menu-item">
-            <div class="item-info">
-              <div class="item-name">Chicken Döner</div>
-              <div class="item-desc">Marinated free-range chicken, herb yoghurt, fresh parsley, pita</div>
-            </div>
-            <div class="item-price">€8.00</div>
-          </div>
-          <div class="menu-item">
-            <div class="item-info">
-              <div class="item-name">Adana Kebab</div>
-              <div class="item-desc">Spiced minced lamb on skewer, bulgur pilaf, grilled pepper</div>
-            </div>
-            <div class="item-price">€13.50</div>
-          </div>
-          <div class="menu-item">
-            <div class="item-info">
-              <div class="item-name">Falafel Wrap</div>
-              <div class="item-desc">Crispy falafel, hummus, cucumber, pickles, tahini — fully plant-based</div>
-            </div>
-            <div class="item-price">€8.50</div>
-          </div>
-        </div>
+    <div class="about-stats reveal">
+      <div class="stat">
+        <div class="num">7<small>yrs</small></div>
+        <div class="lab">same location</div>
       </div>
-
-      <div class="menu-category">
-        <div class="category-label">Sides &amp; Extras</div>
-        <div class="menu-grid">
-          <div class="menu-item">
-            <div class="item-info">
-              <div class="item-name">Sumac Fries</div>
-              <div class="item-desc">Crispy fries, sumac salt, yoghurt dip</div>
-            </div>
-            <div class="item-price">€4.00</div>
-          </div>
-          <div class="menu-item">
-            <div class="item-info">
-              <div class="item-name">Ezme Salad</div>
-              <div class="item-desc">Finely chopped tomato, chilli, parsley, pomegranate molasses</div>
-            </div>
-            <div class="item-price">€4.50</div>
-          </div>
-          <div class="menu-item">
-            <div class="item-info">
-              <div class="item-name">Hummus</div>
-              <div class="item-desc">House-made, olive oil, paprika, warm pita to dip</div>
-            </div>
-            <div class="item-price">€5.00</div>
-          </div>
-          <div class="menu-item">
-            <div class="item-info">
-              <div class="item-name">Grilled Bread</div>
-              <div class="item-desc">Charcoal-toasted lavash, herb butter</div>
-            </div>
-            <div class="item-price">€2.50</div>
-          </div>
-        </div>
+      <div class="stat">
+        <div class="num">42<small>kg</small></div>
+        <div class="lab">meat per day</div>
       </div>
-
-      <div class="menu-category">
-        <div class="category-label">Drinks</div>
-        <div class="menu-grid">
-          <div class="menu-item">
-            <div class="item-info">
-              <div class="item-name">Ayran</div>
-              <div class="item-desc">Chilled salted yoghurt drink, house-made daily</div>
-            </div>
-            <div class="item-price">€2.50</div>
-          </div>
-          <div class="menu-item">
-            <div class="item-info">
-              <div class="item-name">Pomegranate Lemonade</div>
-              <div class="item-desc">Freshly squeezed, sparkling water, mint</div>
-            </div>
-            <div class="item-price">€3.50</div>
-          </div>
-          <div class="menu-item">
-            <div class="item-info">
-              <div class="item-name">Turkish Tea</div>
-              <div class="item-desc">Double-brewed black tea, served in traditional glass</div>
-            </div>
-            <div class="item-price">€2.00</div>
-          </div>
-          <div class="menu-item">
-            <div class="item-info">
-              <div class="item-name">Still Water</div>
-              <div class="item-desc">500 ml</div>
-            </div>
-            <div class="item-price">€1.50</div>
-          </div>
-        </div>
+      <div class="stat">
+        <div class="num">11<small>types</small></div>
+        <div class="lab">marinades</div>
       </div>
-
+      <div class="stat">
+        <div class="num">£8<small>from</small></div>
+        <div class="lab">average spend</div>
+      </div>
     </div>
   </section>
 
-  <footer>
-    <span>Döner &amp; Co</span> &middot; Open daily 11:00 – 23:00 &middot; Dine in &amp; takeaway
-  </footer>
+  <!-- ════ MENU ════ -->
+  <section class="menu" id="menu">
+    <div class="sec-label reveal">
+      <span class="num">03</span>
+      <span>MENU · PRICES IN £</span>
+    </div>
 
-  <!-- ══════════════ THREE.JS ══════════════ -->
-  <script type="module">
-  import * as THREE from 'three';
-  import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
-  (function () {
-    const canvas = document.getElementById('c');
+    <div class="menu-head">
+      <h2 class="reveal">WHAT WE'RE<br>WRAPPING <em>TODAY</em></h2>
+      <div class="note reveal">
+        Prices as of May 2026.<br>Large portions — +30% extra.
+      </div>
+    </div>
 
-    // ── Renderer ──
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.4;
-    renderer.outputColorSpace = THREE.SRGBColorSpace;
+    <div class="menu-grid">
+      <div class="menu-col">
 
-    // ── Scene & Camera ──
-    const scene = new THREE.Scene();
+        <div class="menu-cat reveal">
+          <h3><span>IN FLATBREAD</span><span>04</span></h3>
+          <div class="item">
+            <span class="idx">01</span>
+            <span class="name">Classic Chicken<span class="desc">yoghurt marinade, flatbread, veg, garlic sauce</span></span>
+            <span class="price">8<small>£</small></span>
+          </div>
+          <div class="item">
+            <span class="idx">02</span>
+            <span class="name">Spicy Turkish<span class="desc">beef, chilli marinade, pickled cabbage, onion</span></span>
+            <span class="price">9.50<small>£</small></span>
+          </div>
+          <div class="item">
+            <span class="idx">03</span>
+            <span class="name">Lamb &amp; Cumin<span class="desc">tahini, tomato, pickled onion, fresh herbs</span><span class="badge">hit</span></span>
+            <span class="price">12<small>£</small></span>
+          </div>
+          <div class="item">
+            <span class="idx">04</span>
+            <span class="name">Falafel<span class="desc">hummus, tabbouleh, lemon, tahini</span><span class="badge veg">veg</span></span>
+            <span class="price">8.50<small>£</small></span>
+          </div>
+        </div>
 
-    const camera = new THREE.PerspectiveCamera(34, window.innerWidth / window.innerHeight, 0.1, 100);
-    camera.position.set(1.8, 1.4, 9);
-    camera.lookAt(0, 0, 0);
+        <div class="menu-cat reveal">
+          <h3><span>SIDES</span><span>04</span></h3>
+          <div class="item">
+            <span class="idx">11</span>
+            <span class="name">Hummus with cumin &amp; olive oil</span>
+            <span class="price">6<small>£</small></span>
+          </div>
+          <div class="item">
+            <span class="idx">12</span>
+            <span class="name">Baba Ganoush<span class="desc">smoked aubergine, tahini, pomegranate</span></span>
+            <span class="price">6<small>£</small></span>
+          </div>
+          <div class="item">
+            <span class="idx">13</span>
+            <span class="name">Turkish Potatoes<span class="desc">paprika &amp; sumac</span></span>
+            <span class="price">4.50<small>£</small></span>
+          </div>
+          <div class="item">
+            <span class="idx">14</span>
+            <span class="name">Flatbread (1 pc.)</span>
+            <span class="price">2<small>£</small></span>
+          </div>
+        </div>
+      </div>
 
-    // ── Lights ──
-    scene.add(new THREE.AmbientLight(0xffe8c0, 1.2));
+      <div class="menu-col">
 
-    const key = new THREE.DirectionalLight(0xffd090, 4.0);
-    key.position.set(4, 6, 4);
-    scene.add(key);
+        <div class="menu-cat reveal">
+          <h3><span>PLATES</span><span>03</span></h3>
+          <div class="item">
+            <span class="idx">05</span>
+            <span class="name">Mixed Kebab Platter<span class="desc">three meats from the spit, basmati rice, grilled veg</span><span class="badge new">new</span></span>
+            <span class="price">18<small>£</small></span>
+          </div>
+          <div class="item">
+            <span class="idx">06</span>
+            <span class="name">Shish over Coals<span class="desc">lamb, flatbread, ajika, pickled onion</span></span>
+            <span class="price">15<small>£</small></span>
+          </div>
+          <div class="item">
+            <span class="idx">07</span>
+            <span class="name">Adana Kebab<span class="desc">spiced mince &amp; bulgur, skewer, sumac</span></span>
+            <span class="price">13<small>£</small></span>
+          </div>
+        </div>
 
-    const fill = new THREE.DirectionalLight(0xd0e0ff, 1.5);
-    fill.position.set(-5, 1, 3);
-    scene.add(fill);
+        <div class="menu-cat reveal">
+          <h3><span>DRINKS</span><span>05</span></h3>
+          <div class="item">
+            <span class="idx">21</span>
+            <span class="name">Homemade Ayran<span class="desc">kefir, mint, sea salt</span></span>
+            <span class="price">3<small>£</small></span>
+          </div>
+          <div class="item">
+            <span class="idx">22</span>
+            <span class="name">Turkish Tea in armudu glass</span>
+            <span class="price">2.50<small>£</small></span>
+          </div>
+          <div class="item">
+            <span class="idx">23</span>
+            <span class="name">Turkish Coffee in cezve</span>
+            <span class="price">3.50<small>£</small></span>
+          </div>
+          <div class="item">
+            <span class="idx">24</span>
+            <span class="name">Tarragon Lemonade<span class="desc">house-made, not too sweet</span></span>
+            <span class="price">4.50<small>£</small></span>
+          </div>
+          <div class="item">
+            <span class="idx">25</span>
+            <span class="name">Fresh Pomegranate Juice</span>
+            <span class="price">5<small>£</small></span>
+          </div>
+        </div>
+      </div>
+    </div>
 
-    const rim = new THREE.PointLight(0xff4010, 3.0, 20);
-    rim.position.set(-1, -3, -5);
-    scene.add(rim);
+    <div class="menu-foot">
+      <span>DELIVERY — DELIVEROO · UBER EATS</span>
+      <span>COLLECTION — NO SURCHARGE</span>
+      <span>★ BREAD BAKED IN-HOUSE</span>
+    </div>
+  </section>
 
-    const accent = new THREE.PointLight(0xffc060, 2.0, 12);
-    accent.position.set(3, 0, 5);
-    scene.add(accent);
+  <!-- ════ CONTACT ════ -->
+  <section class="contact" id="contact">
+    <div class="sec-label reveal">
+      <span class="num">04</span>
+      <span>FIND US</span>
+    </div>
 
-    // ── Load GLTF model ──
-    const kebab = new THREE.Group();
-    scene.add(kebab);
-    kebab.scale.setScalar(0); // start hidden for entrance anim
+    <div class="contact-grid">
+      <div class="contact-col reveal">
+        <div class="contact-block">
+          <small>WHERE</small>
+          <a class="big" href="https://maps.google.com/?q=45+Brick+Lane+London" target="_blank" rel="noopener">
+            45 BRICK LANE<br>LONDON E1 6PU
+          </a>
+          <p style="margin-top:14px; color: var(--fg-dim); font-size: 14px;">↳ Shoreditch High Street station, 3 min walk</p>
+        </div>
 
-    const loader = new GLTFLoader();
-    loader.load(
-      'model/scene.gltf',
-      function (gltf) {
-        const model = gltf.scene;
+        <div class="contact-block">
+          <small>HOURS</small>
+          <div class="row"><span>MON–THU</span><span>11:00 → 23:00</span></div>
+          <div class="row"><span>FRI</span><span>11:00 → 02:00</span></div>
+          <div class="row"><span>SAT</span><span>11:00 → 02:00</span></div>
+          <div class="row"><span>SUN</span><span>11:00 → 23:00</span></div>
+        </div>
+      </div>
 
-        // Auto-center and scale to fit nicely
-        const box = new THREE.Box3().setFromObject(model);
-        const center = box.getCenter(new THREE.Vector3());
-        const size   = box.getSize(new THREE.Vector3());
-        const maxDim = Math.max(size.x, size.y, size.z);
-        const scale  = 3.5 / maxDim;
+      <div class="center-spacer"></div>
 
-        model.scale.setScalar(scale);
-        model.position.sub(center.multiplyScalar(scale));
+      <div class="contact-col reveal">
+        <div class="contact-block">
+          <small>CALL</small>
+          <a class="big" href="tel:+442079460000">+44 20<br>7946·0000</a>
+        </div>
 
-        // make sure textures render correctly
-        model.traverse(child => {
-          if (child.isMesh && child.material) {
-            child.material.needsUpdate = true;
-            if (Array.isArray(child.material)) {
-              child.material.forEach(m => { m.needsUpdate = true; });
-            }
-          }
-        });
+        <div class="contact-block">
+          <small>INSTAGRAM</small>
+          <a class="big" href="https://instagram.com/spitfire.kebab" target="_blank" rel="noopener">@SPITFIRE<br>.KEBAB ↗</a>
+          <p style="margin-top:14px; color: var(--fg-dim); font-size: 14px;">behind-the-scenes, specials &amp; new marinades</p>
+        </div>
 
-        kebab.add(model);
-      },
-      undefined,
-      function (err) {
-        console.error('GLTF load error:', err);
+        <div class="contact-block">
+          <small>BOOK A TABLE</small>
+          <a class="big" href="mailto:hi@spitfire.co" style="font-size: clamp(20px, 2.4vw, 36px);">hi@spitfire.co</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="farewell reveal">
+      COME BACK <em>FOR FIRE</em>
+    </div>
+
+    <div class="contact-foot">
+      <span>© 2024–2026 SPITFIRE</span>
+      <span>CRAFTED WITH FIRE IN LONDON</span>
+      <span>v.2.6 · MAY 2026</span>
+    </div>
+  </section>
+
+</main>
+
+<!-- React + Babel for Tweaks panel -->
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" crossorigin="anonymous"></script>
+
+<!-- 3D Kebab (ES module) -->
+<script type="module" src="kebab.js"></script>
+
+<!-- Reveal on scroll + progress track -->
+<script>
+  const io = new IntersectionObserver((entries) => {
+    for (const e of entries) {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    }
+  }, { threshold: 0.12 });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  const track = document.getElementById('prog-track');
+  function onScroll() {
+    const max = document.documentElement.scrollHeight - window.innerHeight;
+    const p = Math.max(0, Math.min(1, window.scrollY / Math.max(1, max)));
+    if (track) track.style.setProperty('--prog', `${p * 104}px`);
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
+</script>
+
+<!-- Tweaks panel -->
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel">
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "spice":     "classic",
+    "spinSpeed": 3,
+    "accent":    "#d97244",
+    "showHud":   true
+  }/*EDITMODE-END*/;
+
+  function App() {
+    const [t, setTweak] = window.useTweaks(TWEAK_DEFAULTS);
+
+    React.useEffect(() => {
+      if (window.__kebab) {
+        window.__kebab.setSpice(t.spice);
+        window.__kebab.setSpinSpeed(t.spinSpeed / 1000);
       }
+      document.documentElement.style.setProperty('--paprika', t.accent);
+      const hud = document.querySelector('.hud');
+      if (hud) hud.style.display = t.showHud ? '' : 'none';
+    }, [t.spice, t.spinSpeed, t.accent, t.showHud]);
+
+    return (
+      <window.TweaksPanel title="Tweaks">
+        <window.TweakSection title="Kebab">
+          <window.TweakRadio
+            label="char level"
+            value={t.spice}
+            onChange={(v) => setTweak('spice', v)}
+            options={[
+              { value: 'classic', label: 'classic' },
+              { value: 'charred', label: 'charred' },
+              { value: 'spicy',   label: 'spicy'   },
+            ]}
+          />
+          <window.TweakSlider
+            label="spin speed"
+            value={t.spinSpeed}
+            min={0} max={12} step={1}
+            onChange={(v) => setTweak('spinSpeed', v)}
+            unit="×"
+          />
+        </window.TweakSection>
+
+        <window.TweakSection title="Style">
+          <window.TweakColor
+            label="accent"
+            value={t.accent}
+            onChange={(v) => setTweak('accent', v)}
+            options={['#d97244', '#e0a93f', '#5fa3a8', '#c44a4a']}
+          />
+          <window.TweakToggle
+            label="show hud"
+            value={t.showHud}
+            onChange={(v) => setTweak('showHud', v)}
+          />
+        </window.TweakSection>
+      </window.TweaksPanel>
     );
+  }
 
-    // ── Entrance animation ──
-    let enterT = 0;
-    function easeOutBack(x) {
-      const c1 = 1.70158, c3 = c1 + 1;
-      return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2);
-    }
+  const root = document.createElement('div');
+  document.body.appendChild(root);
+  ReactDOM.createRoot(root).render(<App />);
+</script>
 
-    // ── Scroll fade ──
-    window.addEventListener('scroll', () => {
-      const progress = Math.min(window.scrollY / (window.innerHeight * 0.55), 1);
-      canvas.style.opacity   = 1 - progress;
-      canvas.style.transform = `translateY(${-progress * 70}px) scale(${1 - progress * 0.15})`;
-    }, { passive: true });
-
-    // ── Resize ──
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
-
-    // ── Render loop ──
-    const clock = new THREE.Clock();
-    function animate() {
-      requestAnimationFrame(animate);
-      const t = clock.getElapsedTime();
-
-      if (enterT < 1) {
-        enterT = Math.min(enterT + 0.016, 1);
-        kebab.scale.setScalar(easeOutBack(enterT));
-      }
-
-      kebab.rotation.y = t * 0.55;
-      kebab.position.y = Math.sin(t * 0.5) * 0.08;
-      kebab.rotation.z = Math.sin(t * 0.35) * 0.022;
-
-      accent.position.x = Math.cos(t * 0.4) * 4;
-      accent.position.z = Math.sin(t * 0.4) * 4;
-
-      renderer.render(scene, camera);
-    }
-    animate();
-  })();
-  </script>
 </body>
 </html>
