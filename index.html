@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>My Portfolio — Junior Backend Developer</title>
+  <title>My Portfolio — Junior Fullstack Developer</title>
   <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&family=Pacifico&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
@@ -692,12 +692,13 @@
   <section class="hero">
     <div class="hero-emoji">🎩</div>
     <h1>Junior<br><span>FullStack</span><br>Developer</h1>
-    <p class="hero-sub">Django · Python · APIs · Docker · Databases</p>
+    <p class="hero-sub">Python · Django · JavaScript · Three.js · Docker · Databases</p>
     <div class="hero-badges">
       <span class="hero-badge" style="animation-delay:.1s">🐍 Python</span>
-      <span class="hero-badge" style="animation-delay:.25s">🧱 Django</span>
-      <span class="hero-badge" style="animation-delay:.4s">📦 Docker</span>
-      <span class="hero-badge" style="animation-delay:.55s">🔌 REST APIs</span>
+      <span class="hero-badge" style="animation-delay:.22s">🧱 Django</span>
+      <span class="hero-badge" style="animation-delay:.34s">⚡ JavaScript</span>
+      <span class="hero-badge" style="animation-delay:.46s">🎯 Three.js</span>
+      <span class="hero-badge" style="animation-delay:.58s">📦 Docker</span>
       <span class="hero-badge" style="animation-delay:.7s">🐘 PostgreSQL</span>
     </div>
     <div class="scroll-hint">
@@ -718,7 +719,7 @@
     <div class="about-inner">
       <h2 class="section-label">About Me 🪄</h2>
       <p class="about-text">
-        I'm a self-taught junior backend developer passionate about building robust, scalable, and efficient web applications. My main stack includes <strong>Django and Python</strong>, and I also work confidently with <strong>HTML, CSS, PostgreSQL, and MySQL</strong>.
+        I'm a self-taught junior fullstack developer passionate about building robust, interactive web applications — from the server all the way to the browser. My backend stack includes <strong>Django and Python</strong>, and on the frontend I work with <strong>JavaScript, HTML, CSS, and Three.js</strong> for 3D web experiences.
       </p>
       <p class="about-text">
         I'm familiar with modern development tools like <strong>Git</strong> and <strong>Docker</strong>, and I'm experienced in integrating external APIs, building authentication systems, and deploying projects. I'm just getting started — but already motivated to build anything from a simple landing page to a full multi-page platform.
@@ -737,15 +738,47 @@
   <!-- ══ SKILLS ══ -->
   <section class="skills-section">
     <h2 class="section-label">Skills 🎡</h2>
-    <div class="skills-grid">
-      <div class="skill-pill"><span>🐍</span> Python</div>
-      <div class="skill-pill"><span>🧱</span> Django</div>
-      <div class="skill-pill"><span>🌐</span> HTML / CSS</div>
-      <div class="skill-pill"><span>🐘</span> PostgreSQL</div>
-      <div class="skill-pill"><span>🐬</span> MySQL</div>
-      <div class="skill-pill"><span>📦</span> Docker</div>
-      <div class="skill-pill"><span>🔌</span> REST APIs</div>
-      <div class="skill-pill"><span>⚙️</span> Git & GitHub</div>
+
+    <div style="max-width:820px;margin:0 auto;display:flex;flex-direction:column;gap:2rem;">
+
+      <div>
+        <div style="font-family:'Nunito',sans-serif;font-size:0.7rem;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:0.85rem;">Backend</div>
+        <div class="skills-grid">
+          <div class="skill-pill"><span>🐍</span> Python</div>
+          <div class="skill-pill"><span>🧱</span> Django</div>
+          <div class="skill-pill"><span>🔌</span> REST APIs</div>
+          <div class="skill-pill"><span>🔑</span> Django REST Framework</div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:'Nunito',sans-serif;font-size:0.7rem;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:0.85rem;">Frontend</div>
+        <div class="skills-grid">
+          <div class="skill-pill"><span>⚡</span> JavaScript</div>
+          <div class="skill-pill"><span>🌐</span> HTML / CSS</div>
+          <div class="skill-pill"><span>🎯</span> Three.js</div>
+          <div class="skill-pill"><span>✨</span> CSS Animations</div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:'Nunito',sans-serif;font-size:0.7rem;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:0.85rem;">Database</div>
+        <div class="skills-grid">
+          <div class="skill-pill"><span>🐘</span> PostgreSQL</div>
+          <div class="skill-pill"><span>🐬</span> MySQL</div>
+          <div class="skill-pill"><span>⚡</span> Redis</div>
+        </div>
+      </div>
+
+      <div>
+        <div style="font-family:'Nunito',sans-serif;font-size:0.7rem;font-weight:800;letter-spacing:0.2em;text-transform:uppercase;color:rgba(255,255,255,0.4);text-align:center;margin-bottom:0.85rem;">DevOps & Tools</div>
+        <div class="skills-grid">
+          <div class="skill-pill"><span>📦</span> Docker</div>
+          <div class="skill-pill"><span>⚙️</span> Git & GitHub</div>
+          <div class="skill-pill"><span>🔧</span> Linux</div>
+        </div>
+      </div>
+
     </div>
   </section>
 
@@ -758,11 +791,12 @@
   <section class="cando-section">
     <h2 class="section-label">What I Can Do 🎪</h2>
     <ul class="cando-list">
-      <li><span class="bullet">⭐</span> Develop landing pages and full websites using Django</li>
-      <li><span class="bullet">🔐</span> Create user registration, authentication, and admin panels</li>
-      <li><span class="bullet">🔌</span> Integrate third-party APIs and external systems</li>
+      <li><span class="bullet">🎯</span> Build interactive 3D web experiences with Three.js & WebGL</li>
+      <li><span class="bullet">🧱</span> Develop fullstack web apps — Django backend + JS frontend</li>
+      <li><span class="bullet">🔐</span> Create authentication systems, admin panels & REST APIs</li>
       <li><span class="bullet">🗄️</span> Design and manage relational databases (PostgreSQL, MySQL)</li>
-      <li><span class="bullet">🚀</span> Deploy projects using Docker and version control with Git</li>
+      <li><span class="bullet">✨</span> Craft animated, responsive UIs with CSS & JavaScript</li>
+      <li><span class="bullet">🚀</span> Deploy projects with Docker and manage code with Git</li>
     </ul>
   </section>
 
