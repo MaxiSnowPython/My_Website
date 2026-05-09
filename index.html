@@ -525,9 +525,12 @@
       margin-top: 1.5rem;
     }
     .modal-gallery img {
-      width: 100%; height: 120px; object-fit: cover;
+      width: 100%; height: 160px; object-fit: cover;
       border-radius: 0.75rem;
+      cursor: zoom-in;
+      transition: transform .2s;
     }
+    .modal-gallery img:hover { transform: scale(1.03); }
     .img-placeholder {
       height: 120px;
       background: linear-gradient(135deg, #ede9fe, #c4b5fd);
@@ -834,15 +837,16 @@
       </div>
 
       <div class="project-card" onclick="openModal(0)">
-        <div class="card-banner" style="background:linear-gradient(135deg,#7c3aed,#c4b5fd)">
-          <span class="card-banner-emoji">📝</span>
+        <div class="card-banner" style="background:linear-gradient(135deg,#0f172a,#1e3a5f)">
+          <span class="card-banner-emoji">⚔️</span>
         </div>
         <div class="card-body">
-          <div class="card-title">Django Blog</div>
-          <p class="card-desc">Full-featured blog with auth, categories, and admin panel.</p>
+          <div class="card-title">CodeBattle</div>
+          <p class="card-desc">Real-time competitive coding platform with WebSocket battles, Kafka events & microservices.</p>
           <div class="tags">
             <span class="tag">Django</span>
-            <span class="tag">PostgreSQL</span>
+            <span class="tag">WebSocket</span>
+            <span class="tag">Kafka</span>
             <span class="tag">Docker</span>
           </div>
         </div>
@@ -1015,11 +1019,17 @@
     /* ── Projects data ── */
     const projects = [
       {
-        icon: "📝", title: "Django Blog",
-        tags: ["Django", "PostgreSQL", "Docker"],
-        desc: "A full-featured blog platform built with Django. Includes user registration and authentication, post categories and tags, a rich admin panel, comment system, and full Docker deployment setup. Users can create accounts, write posts, and manage their own content.",
+        icon: "⚔️", title: "CodeBattle",
+        tags: ["Django", "PostgreSQL", "WebSocket", "Kafka", "Redis", "Docker", "Microservices"],
+        desc: "A real-time competitive coding platform where users battle head-to-head solving programming challenges. Built on a microservice architecture: Django backend, PostgreSQL for persistence, Redis for session state, Kafka for event streaming between services, WebSocket for live game updates, and a sandboxed code execution engine. Fully orchestrated with Docker Compose.",
         links: [{ label: "GitHub →", url: "#" }],
-        images: [],
+        images: [
+          "projects/codebattle/screenshot-2026-05-09_17-36-29.png",
+          "projects/codebattle/screenshot-2026-05-09_17-36-40.png",
+          "projects/codebattle/screenshot-2026-05-09_17-36-51.png",
+          "projects/codebattle/screenshot-2026-05-09_17-37-02.png",
+          "projects/codebattle/screenshot-2026-05-09_17-37-14.png",
+        ],
       },
       {
         icon: "🔌", title: "REST API Service",
