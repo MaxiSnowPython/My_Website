@@ -1,0 +1,1696 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>EkoDankor — Wywóz odpadów na Lubelszczyźnie</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="shared.css" />
+
+
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+<style>
+  :root {
+    --green-deep: #112418;
+    --green-line: rgba(26, 58, 42, 0.14);
+    --cream: #f5f2ec;
+    --cream-soft: #ede9df;
+    --amber: #e8a020;
+    --amber-soft: #f6c062;
+    --ink: #15201a;
+    --ink-soft: #4a564f;
+    --shadow-card: 0 1px 0 rgba(26, 58, 42, 0.04),
+      0 12px 28px -14px rgba(26, 58, 42, 0.18),
+      0 30px 60px -30px rgba(26, 58, 42, 0.18);
+    --shadow-card-hover: 0 1px 0 rgba(26, 58, 42, 0.04),
+      0 24px 50px -18px rgba(26, 58, 42, 0.28),
+      0 50px 90px -40px rgba(26, 58, 42, 0.32);
+    --radius: 18px;
+    --radius-sm: 10px;
+    --maxw: 1240px;
+    --pad: clamp(20px, 4vw, 56px);
+    --display: "Space Grotesk", "Syne", system-ui, sans-serif;
+    --body: "Inter", system-ui, -apple-system, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+
+  * { box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    margin: 0;
+    background: var(--cream);
+    color: var(--ink);
+    font-family: var(--body);
+    font-size: 17px;
+    line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    overflow-x: hidden;
+  }
+
+  a { color: inherit; text-decoration: none; }
+  img { max-width: 100%; display: block; }
+
+  ::selection { background: var(--amber); color: var(--green-deep); }
+
+  /* ===== Three.js sticky stage ===== */
+  #truck-stage {
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 42vh;
+    min-height: 280px;
+    pointer-events: none;
+    z-index: 0;
+  }
+  #truck-stage::after {
+    /* fade content into the road area for legibility */
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      to bottom,
+      rgba(245, 242, 236, 0.0) 0%,
+      rgba(245, 242, 236, 0.0) 40%,
+      rgba(245, 242, 236, 0.6) 100%
+    );
+    pointer-events: none;
+  }
+  #truck-canvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+  }
+
+  /* ===== Top utility bar ===== */
+  .topbar {
+    position: relative;
+    z-index: 10;
+    background: var(--green-deep);
+    color: var(--cream);
+    font-size: 13px;
+    letter-spacing: 0.02em;
+  }
+  .topbar-inner {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 10px var(--pad);
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  .topbar a { display: inline-flex; align-items: center; gap: 8px; }
+  .topbar a:hover { color: var(--amber-soft); }
+  .topbar .pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 10px;
+    border-radius: 999px;
+    background: rgba(232, 160, 32, 0.14);
+    color: var(--amber-soft);
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+  }
+  .topbar .pill .dot {
+    width: 6px; height: 6px; border-radius: 50%;
+    background: var(--amber);
+    box-shadow: 0 0 0 0 rgba(232, 160, 32, 0.6);
+    animation: pulse 2s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(232, 160, 32, 0.7); }
+    50% { box-shadow: 0 0 0 6px rgba(232, 160, 32, 0); }
+  }
+  .topbar-links { display: flex; gap: 22px; flex-wrap: wrap; }
+
+  /* ===== Sticky header ===== */
+  .header {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    background: rgba(245, 242, 236, 0.86);
+    backdrop-filter: saturate(140%) blur(10px);
+    -webkit-backdrop-filter: saturate(140%) blur(10px);
+    border-bottom: 1px solid var(--green-line);
+  }
+  .header-inner {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 16px var(--pad);
+    display: grid;
+    grid-template-columns: auto 1fr auto;
+    gap: 32px;
+    align-items: center;
+  }
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--display);
+    font-weight: 700;
+    color: var(--green);
+    letter-spacing: -0.02em;
+  }
+  .logo-mark {
+    width: 40px; height: 40px;
+    border-radius: 10px;
+    background: var(--green);
+    color: var(--cream);
+    display: grid;
+    place-items: center;
+    position: relative;
+    overflow: hidden;
+  }
+  .logo-mark::before {
+    content: "";
+    position: absolute;
+    inset: auto 0 0 0;
+    height: 9px;
+    background: var(--amber);
+  }
+  .logo-mark span {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 18px;
+    z-index: 1;
+    margin-bottom: 4px;
+  }
+  .logo-text {
+    line-height: 1.05;
+    font-size: 19px;
+  }
+  .logo-text small {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10.5px;
+    color: var(--ink-soft);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .nav {
+    display: flex;
+    gap: 28px;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 15px;
+  }
+  .nav a {
+    position: relative;
+    padding: 6px 0;
+    color: var(--ink);
+  }
+  .nav a::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 0;
+    height: 2px;
+    background: var(--amber);
+    transform: scaleX(0);
+    transform-origin: left;
+    transition: transform 0.25s ease;
+  }
+  .nav a:hover::after { transform: scaleX(1); }
+  .header-cta {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .phone {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 17px;
+    color: var(--green);
+    letter-spacing: -0.01em;
+  }
+  .phone small {
+    display: block;
+    font-family: var(--mono);
+    font-size: 10px;
+    color: var(--ink-soft);
+    font-weight: 500;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+  }
+
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    padding: 13px 22px;
+    border-radius: 999px;
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 15px;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: transform 0.18s ease, box-shadow 0.2s ease,
+      background 0.2s ease, color 0.2s ease;
+    white-space: nowrap;
+  }
+  .btn-primary {
+    background: var(--green);
+    color: var(--cream);
+  }
+  .btn-primary:hover {
+    background: var(--green-deep);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px -12px rgba(26, 58, 42, 0.45);
+  }
+  .btn-amber {
+    background: var(--amber);
+    color: var(--green-deep);
+  }
+  .btn-amber:hover {
+    background: var(--amber-soft);
+    transform: translateY(-2px);
+    box-shadow: 0 14px 28px -12px rgba(232, 160, 32, 0.6);
+  }
+  .btn-ghost {
+    background: transparent;
+    border-color: var(--green-line);
+    color: var(--green);
+  }
+  .btn-ghost:hover {
+    background: var(--green);
+    color: var(--cream);
+    border-color: var(--green);
+  }
+  .btn .arr {
+    display: inline-block;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.18);
+    position: relative;
+  }
+  .btn-amber .arr { background: rgba(26, 58, 42, 0.18); }
+  .btn .arr::before {
+    content: "→";
+    position: absolute;
+    inset: 0;
+    display: grid; place-items: center;
+    font-size: 12px; line-height: 1;
+  }
+
+  /* ===== Page wrap (above the canvas) ===== */
+  .page {
+    position: relative;
+    z-index: 5;
+  }
+
+  section {
+    position: relative;
+    z-index: 5;
+  }
+
+  .container {
+    max-width: var(--maxw);
+    margin: 0 auto;
+    padding: 0 var(--pad);
+  }
+
+  /* ===== Hero ===== */
+  .hero {
+    padding: clamp(60px, 10vw, 130px) 0 clamp(380px, 38vw, 500px);
+    position: relative;
+  }
+  .eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--green);
+    padding: 8px 14px;
+    border: 1px solid var(--green-line);
+    border-radius: 999px;
+    background: var(--cream-soft);
+  }
+  .eyebrow .pulse {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--amber);
+  }
+  .hero h1 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(46px, 8vw, 112px);
+    line-height: 0.96;
+    letter-spacing: -0.035em;
+    margin: 28px 0 26px;
+    color: var(--green-deep);
+    text-wrap: balance;
+  }
+  .hero h1 em {
+    font-style: normal;
+    color: var(--green);
+    position: relative;
+    display: inline-block;
+  }
+  .hero h1 em::after {
+    content: "";
+    position: absolute;
+    left: 0; right: 0; bottom: 6px;
+    height: 14px;
+    background: var(--amber);
+    z-index: -1;
+    opacity: 0.85;
+  }
+  .hero-sub {
+    max-width: 620px;
+    font-size: clamp(17px, 1.5vw, 20px);
+    color: var(--ink-soft);
+    line-height: 1.55;
+    margin: 0 0 36px;
+  }
+  .hero-actions {
+    display: flex;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .hero-meta {
+    margin-top: 56px;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 28px;
+    max-width: 720px;
+  }
+  .hero-meta .cell {
+    border-top: 1px solid var(--green-line);
+    padding-top: 16px;
+  }
+  .hero-meta .num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(28px, 3.2vw, 38px);
+    color: var(--green);
+    letter-spacing: -0.02em;
+    line-height: 1;
+  }
+  .hero-meta .lbl {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--ink-soft);
+    margin-top: 8px;
+  }
+
+  /* Hero side panel — fact card */
+  .hero-grid {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr;
+    gap: 64px;
+    align-items: end;
+  }
+  .hero-card {
+    background: var(--green);
+    color: var(--cream);
+    padding: 28px;
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-card::before {
+    content: "";
+    position: absolute;
+    top: 0; right: 0;
+    width: 90px; height: 90px;
+    background: var(--amber);
+    border-radius: 50%;
+    transform: translate(40%, -40%);
+  }
+  .hero-card .kicker {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: var(--amber-soft);
+    margin-bottom: 18px;
+    position: relative;
+  }
+  .hero-card h3 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 26px;
+    line-height: 1.15;
+    letter-spacing: -0.01em;
+    margin: 0 0 14px;
+    position: relative;
+  }
+  .hero-card p {
+    color: rgba(245, 242, 236, 0.78);
+    font-size: 14.5px;
+    margin: 0 0 22px;
+    position: relative;
+  }
+  .hero-card .row {
+    display: flex;
+    justify-content: space-between;
+    border-top: 1px solid rgba(245, 242, 236, 0.16);
+    padding-top: 14px;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: rgba(245, 242, 236, 0.7);
+    position: relative;
+  }
+  .hero-card .row strong { color: var(--cream); }
+
+  @media (max-width: 880px) {
+    .hero-grid { grid-template-columns: 1fr; gap: 36px; }
+    .hero-card { max-width: 460px; }
+    .hero-meta { grid-template-columns: repeat(3, 1fr); gap: 18px; }
+  }
+
+  /* ===== Section heading ===== */
+  .section-head {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 32px;
+    align-items: end;
+    margin-bottom: 48px;
+  }
+  .section-head .label {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--amber);
+    margin-bottom: 14px;
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-head .label::before {
+    content: "";
+    width: 22px; height: 1px;
+    background: var(--amber);
+  }
+  .section-head h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(34px, 5vw, 60px);
+    line-height: 1.0;
+    letter-spacing: -0.025em;
+    margin: 0;
+    color: var(--green-deep);
+    max-width: 14ch;
+    text-wrap: balance;
+  }
+  .section-head .lede {
+    max-width: 380px;
+    color: var(--ink-soft);
+    font-size: 16px;
+  }
+  @media (max-width: 720px) {
+    .section-head { grid-template-columns: 1fr; }
+    .section-head .lede { max-width: 100%; }
+  }
+
+  /* ===== Services ===== */
+  .services {
+    padding: clamp(80px, 10vw, 130px) 0;
+    background: var(--cream);
+  }
+  .services-grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    gap: 22px;
+  }
+  .card {
+    background: var(--cream-soft);
+    border: 1px solid var(--green-line);
+    border-radius: var(--radius);
+    padding: 28px;
+    box-shadow: var(--shadow-card);
+    transition: transform 0.28s cubic-bezier(.2,.8,.2,1),
+      box-shadow 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    min-height: 280px;
+    overflow: hidden;
+  }
+  .card:hover {
+    transform: translateY(-6px);
+    box-shadow: var(--shadow-card-hover);
+    border-color: rgba(26, 58, 42, 0.22);
+    background: #fff;
+  }
+  .card .num {
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: auto;
+    letter-spacing: 0.14em;
+  }
+  .card h3 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 24px;
+    line-height: 1.15;
+    letter-spacing: -0.015em;
+    margin: 26px 0 10px;
+    color: var(--green-deep);
+  }
+  .card p {
+    color: var(--ink-soft);
+    font-size: 14.5px;
+    margin: 0;
+    line-height: 1.55;
+  }
+  .card .meta {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px dashed var(--green-line);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--ink-soft);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .card .meta span { color: var(--green); font-weight: 600; }
+  .card .meta .arrow {
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    border: 1px solid var(--green-line);
+    display: grid; place-items: center;
+    transition: background 0.25s ease, color 0.25s ease,
+      border-color 0.25s ease, transform 0.25s ease;
+    color: var(--green);
+  }
+  .card:hover .meta .arrow {
+    background: var(--green);
+    color: var(--cream);
+    border-color: var(--green);
+    transform: rotate(-45deg);
+  }
+
+  /* glyph (industrial mark, abstract icon) */
+  .glyph {
+    width: 56px; height: 56px;
+    border-radius: 14px;
+    background: rgba(26, 58, 42, 0.06);
+    display: grid;
+    place-items: center;
+    color: var(--green);
+    flex-shrink: 0;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  .card:hover .glyph {
+    background: var(--green);
+    color: var(--amber);
+  }
+
+  /* feature card variants */
+  .card-feature {
+    grid-column: span 6;
+    background: var(--green);
+    color: var(--cream);
+    border-color: transparent;
+    min-height: 360px;
+  }
+  .card-feature:hover { background: var(--green-deep); }
+  .card-feature .num { color: var(--amber-soft); }
+  .card-feature h3 { color: var(--cream); }
+  .card-feature p { color: rgba(245, 242, 236, 0.78); }
+  .card-feature .glyph {
+    background: rgba(232, 160, 32, 0.16);
+    color: var(--amber);
+  }
+  .card-feature:hover .glyph { background: var(--amber); color: var(--green-deep); }
+  .card-feature .meta { border-top-color: rgba(245, 242, 236, 0.18); color: rgba(245, 242, 236, 0.7); }
+  .card-feature .meta span { color: var(--amber-soft); }
+  .card-feature .meta .arrow { border-color: rgba(245, 242, 236, 0.3); color: var(--cream); }
+  .card-feature:hover .meta .arrow { background: var(--amber); color: var(--green-deep); border-color: var(--amber); }
+
+  .card-amber {
+    grid-column: span 6;
+    background: var(--amber);
+    color: var(--green-deep);
+    border-color: transparent;
+  }
+  .card-amber:hover { background: var(--amber-soft); }
+  .card-amber .num { color: rgba(26, 58, 42, 0.6); }
+  .card-amber h3 { color: var(--green-deep); }
+  .card-amber p { color: rgba(26, 58, 42, 0.78); }
+  .card-amber .glyph {
+    background: rgba(26, 58, 42, 0.14);
+    color: var(--green-deep);
+  }
+  .card-amber .meta {
+    border-top-color: rgba(26, 58, 42, 0.18);
+    color: rgba(26, 58, 42, 0.7);
+  }
+  .card-amber .meta span { color: var(--green-deep); }
+  .card-amber .meta .arrow { border-color: rgba(26, 58, 42, 0.3); color: var(--green-deep); }
+  .card-amber:hover .meta .arrow { background: var(--green-deep); color: var(--amber); border-color: var(--green-deep); }
+
+  .card-std-4 { grid-column: span 4; }
+  .card-std-3 { grid-column: span 3; }
+
+  @media (max-width: 1080px) {
+    .card-feature, .card-amber { grid-column: span 12; }
+    .card-std-4 { grid-column: span 6; }
+    .card-std-3 { grid-column: span 6; }
+  }
+  @media (max-width: 640px) {
+    .card-std-4, .card-std-3 { grid-column: span 12; }
+  }
+
+  /* ===== Why us ===== */
+  .why {
+    padding: clamp(80px, 10vw, 130px) 0;
+    background: var(--green);
+    color: var(--cream);
+    position: relative;
+  }
+  .why .section-head h2 { color: var(--cream); }
+  .why .section-head .label { color: var(--amber); }
+  .why .section-head .lede { color: rgba(245, 242, 236, 0.7); }
+
+  .why-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    margin-bottom: 64px;
+  }
+  .why-cell {
+    border-top: 2px solid var(--amber);
+    padding-top: 22px;
+  }
+  .why-cell .num {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(56px, 6vw, 84px);
+    line-height: 0.95;
+    letter-spacing: -0.04em;
+    color: var(--cream);
+  }
+  .why-cell .num small {
+    font-size: 0.45em;
+    color: var(--amber);
+    margin-left: 4px;
+    font-weight: 600;
+  }
+  .why-cell .lbl {
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    color: rgba(245, 242, 236, 0.65);
+    margin-top: 12px;
+    max-width: 22ch;
+  }
+
+  .why-list {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .why-list .item {
+    border: 1px solid rgba(245, 242, 236, 0.14);
+    border-radius: var(--radius);
+    padding: 26px;
+    transition: background 0.25s ease, border-color 0.25s ease,
+      transform 0.25s ease;
+  }
+  .why-list .item:hover {
+    background: rgba(245, 242, 236, 0.04);
+    border-color: var(--amber);
+    transform: translateY(-3px);
+  }
+  .why-list h4 {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 19px;
+    margin: 18px 0 8px;
+    color: var(--cream);
+    letter-spacing: -0.01em;
+  }
+  .why-list p {
+    color: rgba(245, 242, 236, 0.7);
+    font-size: 14.5px;
+    margin: 0;
+  }
+  .why-list .tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: var(--amber);
+  }
+  .why-list .tag::before {
+    content: "";
+    width: 10px; height: 1px;
+    background: var(--amber);
+  }
+
+  @media (max-width: 980px) {
+    .why-grid { grid-template-columns: repeat(2, 1fr); }
+    .why-list { grid-template-columns: repeat(2, 1fr); }
+  }
+  @media (max-width: 600px) {
+    .why-grid { grid-template-columns: 1fr 1fr; gap: 16px; }
+    .why-list { grid-template-columns: 1fr; }
+  }
+
+  /* ===== Process strip ===== */
+  .process {
+    background: var(--cream-soft);
+    padding: clamp(60px, 7vw, 90px) 0;
+    border-top: 1px solid var(--green-line);
+    border-bottom: 1px solid var(--green-line);
+  }
+  .process-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+    counter-reset: step;
+  }
+  .step {
+    counter-increment: step;
+    position: relative;
+    padding-top: 12px;
+  }
+  .step::before {
+    content: counter(step, decimal-leading-zero);
+    font-family: var(--mono);
+    font-size: 12px;
+    color: var(--amber);
+    letter-spacing: 0.16em;
+    display: block;
+    margin-bottom: 16px;
+  }
+  .step h4 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 22px;
+    margin: 0 0 8px;
+    letter-spacing: -0.015em;
+    color: var(--green-deep);
+  }
+  .step p {
+    margin: 0;
+    color: var(--ink-soft);
+    font-size: 14.5px;
+  }
+  .step::after {
+    content: "";
+    position: absolute;
+    top: 12px; right: -12px;
+    width: 10px; height: 10px;
+    border-top: 1.5px solid var(--green);
+    border-right: 1.5px solid var(--green);
+    transform: rotate(45deg);
+    opacity: 0.4;
+  }
+  .step:last-child::after { display: none; }
+  @media (max-width: 800px) {
+    .process-grid { grid-template-columns: repeat(2, 1fr); }
+    .step:nth-child(2)::after { display: none; }
+  }
+  @media (max-width: 480px) {
+    .process-grid { grid-template-columns: 1fr; }
+    .step::after { display: none; }
+  }
+
+  /* ===== Payments / Contact ===== */
+  .contact {
+    padding: clamp(80px, 10vw, 130px) 0;
+    background: var(--cream);
+  }
+  .contact-grid {
+    display: grid;
+    grid-template-columns: 1.1fr 0.9fr;
+    gap: 48px;
+    align-items: stretch;
+  }
+  .contact-card {
+    background: var(--green);
+    color: var(--cream);
+    padding: clamp(28px, 4vw, 48px);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow-card);
+    position: relative;
+    overflow: hidden;
+  }
+  .contact-card::before {
+    content: "";
+    position: absolute;
+    inset: auto -20% -40% auto;
+    width: 320px; height: 320px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(232,160,32,0.35), transparent 65%);
+    pointer-events: none;
+  }
+  .contact-card .kicker {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--amber);
+    margin-bottom: 18px;
+  }
+  .contact-card h2 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(32px, 4vw, 48px);
+    line-height: 1.0;
+    letter-spacing: -0.025em;
+    margin: 0 0 22px;
+    text-wrap: balance;
+  }
+  .contact-card p {
+    color: rgba(245, 242, 236, 0.78);
+    margin: 0 0 28px;
+    max-width: 38ch;
+  }
+
+  .contact-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 28px;
+    border-top: 1px solid rgba(245, 242, 236, 0.16);
+    padding-top: 28px;
+    margin-top: 28px;
+    position: relative;
+  }
+  .contact-info .lbl {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.16em;
+    margin-bottom: 6px;
+  }
+  .contact-info strong {
+    font-family: var(--display);
+    font-weight: 600;
+    font-size: 17px;
+    color: var(--cream);
+    letter-spacing: -0.01em;
+  }
+  .contact-info .sm {
+    font-size: 13.5px;
+    color: rgba(245, 242, 236, 0.72);
+    margin-top: 2px;
+  }
+
+  .pay-card {
+    background: var(--cream-soft);
+    border: 1px solid var(--green-line);
+    border-radius: var(--radius);
+    padding: clamp(28px, 4vw, 40px);
+    box-shadow: var(--shadow-card);
+    display: flex;
+    flex-direction: column;
+  }
+  .pay-card .kicker {
+    font-family: var(--mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    color: var(--amber);
+    margin-bottom: 14px;
+  }
+  .pay-card h3 {
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: clamp(24px, 3vw, 32px);
+    line-height: 1.05;
+    letter-spacing: -0.02em;
+    margin: 0 0 14px;
+    color: var(--green-deep);
+  }
+  .pay-card p {
+    color: var(--ink-soft);
+    margin: 0 0 24px;
+    font-size: 15px;
+  }
+  .pay-row {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 14px;
+    background: var(--cream);
+    border: 1px dashed var(--green-line);
+    padding: 18px;
+    border-radius: var(--radius-sm);
+    font-family: var(--mono);
+    font-size: 13px;
+    margin-bottom: 22px;
+  }
+  .pay-row .ln {
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    color: var(--ink-soft);
+  }
+  .pay-row .ln strong {
+    color: var(--green-deep);
+    font-family: var(--display);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    font-size: 15px;
+  }
+  .pay-methods {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: auto;
+  }
+  .chip {
+    padding: 6px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--green-line);
+    background: var(--cream);
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--green);
+  }
+
+  @media (max-width: 880px) {
+    .contact-grid { grid-template-columns: 1fr; }
+    .contact-info { grid-template-columns: 1fr; }
+  }
+
+  /* ===== Footer ===== */
+  .footer {
+    background: var(--green-deep);
+    color: rgba(245, 242, 236, 0.72);
+    padding: 64px 0 28px;
+    position: relative;
+    z-index: 5;
+  }
+  .footer-top {
+    display: grid;
+    grid-template-columns: 1.2fr 1fr 1fr 1fr;
+    gap: 36px;
+    padding-bottom: 44px;
+    border-bottom: 1px solid rgba(245, 242, 236, 0.1);
+  }
+  .footer h5 {
+    font-family: var(--mono);
+    font-size: 11px;
+    color: var(--amber);
+    text-transform: uppercase;
+    letter-spacing: 0.18em;
+    margin: 0 0 18px;
+    font-weight: 600;
+  }
+  .footer ul {
+    list-style: none;
+    padding: 0; margin: 0;
+    display: grid; gap: 10px;
+    font-size: 14.5px;
+  }
+  .footer ul a:hover { color: var(--amber); }
+  .footer .brand-block p {
+    color: rgba(245, 242, 236, 0.6);
+    font-size: 14.5px;
+    margin: 14px 0 0;
+    max-width: 36ch;
+  }
+  .footer-bottom {
+    padding-top: 22px;
+    display: flex;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-family: var(--mono);
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.14em;
+    color: rgba(245, 242, 236, 0.4);
+  }
+  @media (max-width: 760px) {
+    .footer-top { grid-template-columns: 1fr 1fr; }
+  }
+  @media (max-width: 460px) {
+    .footer-top { grid-template-columns: 1fr; }
+  }
+
+  /* ===== Mobile nav cleanup ===== */
+  @media (max-width: 1080px) {
+    .nav { display: none; }
+    .header-inner { grid-template-columns: auto 1fr auto; }
+  }
+  @media (max-width: 720px) {
+    .header-cta .phone { display: none; }
+  }
+
+  /* ===== Decorative full-width strip ===== */
+  .ticker {
+    background: var(--green-deep);
+    color: var(--amber);
+    overflow: hidden;
+    border-top: 1px solid rgba(245, 242, 236, 0.06);
+    border-bottom: 1px solid rgba(245, 242, 236, 0.06);
+    position: relative;
+    z-index: 5;
+  }
+  .ticker-track {
+    display: flex;
+    gap: 64px;
+    padding: 18px 0;
+    font-family: var(--display);
+    font-weight: 700;
+    font-size: 22px;
+    letter-spacing: -0.01em;
+    white-space: nowrap;
+    animation: ticker 30s linear infinite;
+  }
+  .ticker-track span {
+    display: inline-flex; align-items: center; gap: 24px;
+  }
+  .ticker-track span::after {
+    content: "✺";
+    color: rgba(232, 160, 32, 0.45);
+    font-size: 14px;
+  }
+  @keyframes ticker {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+  }
+</style>
+</head>
+<body>
+
+<!-- Three.js sticky stage (behind content) -->
+<div id="truck-stage" aria-hidden="true">
+  <canvas id="truck-canvas"></canvas>
+</div>
+
+<!-- ============= TOP UTILITY BAR ============= -->
+<div class="topbar" data-screen-label="00 Topbar">
+  <div class="topbar-inner">
+    <div class="pill"><span class="dot"></span> Pn–Pt 7:00–18:00 · Lubelszczyzna</div>
+    <div class="topbar-links">
+      <a href="tel:+48817400000">+48 81 740 00 00</a>
+      <a href="/cdn-cgi/l/email-protection#7c1e15090e133c191713181d1217130e520c10"><span class="__cf_email__" data-cfemail="a8cac1dddac7e8cdc3c7ccc9c6c3c7da86d8c4">[email&#160;protected]</span></a>
+      <a href="#kontakt">Lublin · ul. Składowa 18</a>
+    </div>
+  </div>
+</div>
+
+<!-- ============= STICKY HEADER ============= -->
+<header class="header" data-screen-label="01 Header">
+  <div class="header-inner">
+    <a class="logo" href="#">
+      <span class="logo-mark"><span>E</span></span>
+      <span class="logo-text">
+        EkoDankor
+        <small>Odbiór odpadów · Lublin</small>
+      </span>
+    </a>
+    <nav class="nav" aria-label="Główna nawigacja">
+      <a href="about.html">O firmie</a>
+      <a href="uslugi.html">Usługi</a>
+      <a href="konsultacja.html">Konsultacje</a>
+      <a href="#dlaczego-my">Dlaczego my</a>
+      <a href="#kontakt">Kontakt</a>
+    </nav>
+    <div class="header-cta">
+      <div class="phone">
+        +48 81 740 00 00
+        <small>zgłoś odbiór</small>
+      </div>
+      <a class="btn btn-primary" href="#kontakt">
+        Zamów odbiór <span class="arr"></span>
+      </a>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+<!-- ============= HERO ============= -->
+<section class="hero" id="o-firmie" data-screen-label="02 Hero">
+  <div class="container">
+    <div class="hero-grid">
+      <div>
+        <span class="eyebrow"><span class="pulse"></span> Województwo lubelskie · od 2009 r.</span>
+        <h1>Wywozimy odpady,<br/>nie <em>obietnice</em>.</h1>
+        <p class="hero-sub">
+          EkoDankor to lokalna firma sanitarna obsługująca gospodarstwa domowe,
+          wspólnoty i firmy na terenie powiatu lubelskiego. Pracujemy zgodnie
+          z BDO, BDS i wymogami gminnymi — punktualnie, bez ukrytych opłat,
+          z wagą na każdym pojeździe.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-amber" href="#kontakt">
+            Zamów odbiór odpadów <span class="arr"></span>
+          </a>
+          <a class="btn btn-ghost" href="#uslugi">
+            Zobacz cennik usług
+          </a>
+        </div>
+
+        <div class="hero-meta">
+          <div class="cell">
+            <div class="num">17 lat</div>
+            <div class="lbl">na rynku regionu</div>
+          </div>
+          <div class="cell">
+            <div class="num">3 200+</div>
+            <div class="lbl">stałych umów</div>
+          </div>
+          <div class="cell">
+            <div class="num">98,4%</div>
+            <div class="lbl">odbiorów na czas</div>
+          </div>
+        </div>
+      </div>
+
+      <aside class="hero-card" aria-label="Skrót firmy">
+        <div class="kicker">Karta firmy · 2026</div>
+        <h3>Pełna ewidencja BDO, transport własny, segregacja u źródła.</h3>
+        <p>
+          Posiadamy własną flotę śmieciarek, prasokontenerów i punkt
+          przeładunkowy w Niemcach. Ważymy każdy odbiór i wystawiamy
+          dokument KPO w 24 h.
+        </p>
+        <div class="row">
+          <span>NIP</span>
+          <strong>712-29-83-441</strong>
+        </div>
+        <div class="row" style="border-top:none; padding-top: 6px;">
+          <span>Numer BDO</span>
+          <strong>000041982</strong>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+<!-- ============= TICKER ============= -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>Lublin</span><span>Świdnik</span><span>Niemce</span><span>Łęczna</span>
+    <span>Bełżyce</span><span>Bychawa</span><span>Lubartów</span><span>Piaski</span>
+    <span>Mełgiew</span><span>Garbów</span><span>Wólka</span><span>Konopnica</span>
+    <span>Lublin</span><span>Świdnik</span><span>Niemce</span><span>Łęczna</span>
+    <span>Bełżyce</span><span>Bychawa</span><span>Lubartów</span><span>Piaski</span>
+    <span>Mełgiew</span><span>Garbów</span><span>Wólka</span><span>Konopnica</span>
+  </div>
+</div>
+
+<!-- ============= SERVICES ============= -->
+<section class="services" id="uslugi" data-screen-label="03 Usługi">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="label">Usługi · /02</div>
+        <h2>Co odbieramy<br/>i jak to robimy.</h2>
+      </div>
+      <p class="lede">
+        Dobierzemy pojemnik, harmonogram i częstotliwość pod realne potrzeby —
+        gospodarstwo, blok, sklep, plac budowy. Każda usługa rozliczana jest
+        wagowo lub ryczałtem.
+      </p>
+    </div>
+
+    <div class="services-grid">
+
+      <!-- Card 1 — featured (dark) -->
+      <article class="card card-feature">
+        <div class="num">01 / Komunalne</div>
+        <div class="glyph" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M5 7h14l-1.2 13.2a1 1 0 0 1-1 .8H7.2a1 1 0 0 1-1-.8L5 7Z"/>
+            <path d="M9 7V4.5A1.5 1.5 0 0 1 10.5 3h3A1.5 1.5 0 0 1 15 4.5V7"/>
+            <path d="M3 7h18"/>
+            <path d="M10 11v6M14 11v6"/>
+          </svg>
+        </div>
+        <h3>Odpady bytowe komunalne</h3>
+        <p>
+          Regularny odbiór z gospodarstw domowych, wspólnot i firm. Pojemniki
+          120 / 240 / 1100 l, worki workowe i big-bagi. Harmonogramy gminne
+          oraz indywidualne.
+        </p>
+        <div class="meta">
+          <span>Od 19 zł / m³</span>
+          <div class="arrow">→</div>
+        </div>
+      </article>
+
+      <!-- Card 2 — featured (amber) -->
+      <article class="card card-amber">
+        <div class="num">02 / Bio</div>
+        <div class="glyph" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M4 20s2-9 9-12c5-2 7 0 7 0s-1 9-7 11c-5 1.7-9 1-9 1Z"/>
+            <path d="M4 20c4-6 8-9 13-10"/>
+          </svg>
+        </div>
+        <h3>Odpady biodegradowalne</h3>
+        <p>
+          Brązowy pojemnik na resztki kuchenne, skoszoną trawę, liście i
+          rozdrobnione gałęzie. Wywozimy do biokompostowni partnerskiej w
+          Rokitnie.
+        </p>
+        <div class="meta">
+          <span>Co 7 dni · sezon</span>
+          <div class="arrow">→</div>
+        </div>
+      </article>
+
+      <!-- Card 3 — std-4 -->
+      <article class="card card-std-4">
+        <div class="num">03 / Budowlane</div>
+        <div class="glyph" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M3 17l8-8 4 4 6-6"/>
+            <path d="M14 7h7v7"/>
+            <path d="M3 21h18"/>
+          </svg>
+        </div>
+        <h3>Odpady budowlane i gruz</h3>
+        <p>
+          Kontenery KP-5, KP-7 i KP-10 podstawiamy w 24 h. Beton, cegła,
+          ceramika, ziemia, drewno, mieszane. Z ważeniem na placu zwrotu.
+        </p>
+        <div class="meta">
+          <span>Kontener 5–10 m³</span>
+          <div class="arrow">→</div>
+        </div>
+      </article>
+
+      <!-- Card 4 — std-4 -->
+      <article class="card card-std-4">
+        <div class="num">04 / Wielkogabaryty</div>
+        <div class="glyph" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="9" width="18" height="9" rx="1.5"/>
+            <path d="M3 13h18"/>
+            <path d="M7 18v2M17 18v2"/>
+            <path d="M5 9V6a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3"/>
+          </svg>
+        </div>
+        <h3>Meble i wielkogabaryty</h3>
+        <p>
+          Sofy, materace, szafy, sprzęt AGD, opony, okna. Odbiór z mieszkania
+          lub z chodnika. Wystarczy zdjęcie i adres — wycena w 30 minut.
+        </p>
+        <div class="meta">
+          <span>Wycena indywid.</span>
+          <div class="arrow">→</div>
+        </div>
+      </article>
+
+      <!-- Card 5 — std-4 -->
+      <article class="card card-std-4">
+        <div class="num">05 / Doradztwo</div>
+        <div class="glyph" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M12 3a4 4 0 0 1 4 4c0 2-2 3-2 5h-4c0-2-2-3-2-5a4 4 0 0 1 4-4Z"/>
+            <path d="M10 16h4"/>
+            <path d="M11 19h2"/>
+          </svg>
+        </div>
+        <h3>Konsultacje BDO i KPO</h3>
+        <p>
+          Pomożemy zarejestrować firmę w BDO, ustalić kody odpadów, prowadzić
+          ewidencję i rozliczyć kwartał. Bez papierowego chaosu.
+        </p>
+        <div class="meta">
+          <span>Stała opieka</span>
+          <div class="arrow">→</div>
+        </div>
+      </article>
+
+      <!-- Card 6 — std-3 -->
+      <article class="card card-std-3">
+        <div class="num">06 / Kontenery</div>
+        <div class="glyph" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="6" width="18" height="12" rx="1"/>
+            <path d="M7 6v12M11 6v12M15 6v12"/>
+          </svg>
+        </div>
+        <h3>Wynajem kontenerów</h3>
+        <p>
+          KP-5 do KP-30, prasokontenery do dużych firm.
+        </p>
+        <div class="meta">
+          <span>Doba / tydzień</span>
+          <div class="arrow">→</div>
+        </div>
+      </article>
+
+      <!-- Card 7 — std-3 -->
+      <article class="card card-std-3">
+        <div class="num">07 / Płatności</div>
+        <div class="glyph" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <rect x="3" y="6" width="18" height="13" rx="1.5"/>
+            <path d="M3 11h18"/>
+            <path d="M7 16h4"/>
+          </svg>
+        </div>
+        <h3>e-Faktura i BLIK</h3>
+        <p>
+          Rozliczenie online, e-Faktura, BLIK, polecenie zapłaty.
+        </p>
+        <div class="meta">
+          <span>Bez prowizji</span>
+          <div class="arrow">→</div>
+        </div>
+      </article>
+
+      <!-- Card 8 — std-3 -->
+      <article class="card card-std-3">
+        <div class="num">08 / Niebezpieczne</div>
+        <div class="glyph" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M12 3l9 16H3l9-16Z"/>
+            <path d="M12 10v5"/>
+            <path d="M12 17.5h.01"/>
+          </svg>
+        </div>
+        <h3>Odpady niebezpieczne</h3>
+        <p>
+          Oleje, baterie, świetlówki, ZSEiE — z dokumentem KPO.
+        </p>
+        <div class="meta">
+          <span>Tylko dla firm</span>
+          <div class="arrow">→</div>
+        </div>
+      </article>
+
+      <!-- Card 9 — std-3 -->
+      <article class="card card-std-3">
+        <div class="num">09 / Sezon</div>
+        <div class="glyph" aria-hidden="true">
+          <svg width="30" height="30" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8">
+            <path d="M12 3v18M3 12h18"/>
+            <path d="M5.5 5.5l13 13M18.5 5.5l-13 13"/>
+          </svg>
+        </div>
+        <h3>Akcje sezonowe</h3>
+        <p>
+          Odbiory choinek, liści, popiołu, sprzątanie po remoncie.
+        </p>
+        <div class="meta">
+          <span>Zima · jesień</span>
+          <div class="arrow">→</div>
+        </div>
+      </article>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============= WHY US ============= -->
+<section class="why" id="dlaczego-my" data-screen-label="04 Dlaczego my">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="label">Dlaczego EkoDankor · /03</div>
+        <h2>Praca, która<br/>nie znika z mapy.</h2>
+      </div>
+      <p class="lede">
+        Jesteśmy stąd. Znamy każdą uliczkę, każdą bramę i każdą wąską drogę
+        gminną w okolicy Lublina. Dlatego nasi kierowcy nie spóźniają się
+        przez GPS — bo nie potrzebują GPS-u.
+      </p>
+    </div>
+
+    <div class="why-grid">
+      <div class="why-cell">
+        <div class="num">17<small>lat</small></div>
+        <div class="lbl">stałej obecności w regionie</div>
+      </div>
+      <div class="why-cell">
+        <div class="num">42</div>
+        <div class="lbl">pojazdy własne we flocie</div>
+      </div>
+      <div class="why-cell">
+        <div class="num">68%</div>
+        <div class="lbl">poziom recyklingu w 2025</div>
+      </div>
+      <div class="why-cell">
+        <div class="num">24h</div>
+        <div class="lbl">czas reakcji na zamówienie</div>
+      </div>
+    </div>
+
+    <div class="why-list">
+      <div class="item">
+        <div class="tag">Lokalność</div>
+        <h4>Kierowcy z Lubelszczyzny</h4>
+        <p>
+          70% naszych kierowców pracuje z nami ponad 5 lat. Znają trasy,
+          mieszkańców i to, gdzie zawsze stoi krzywo zaparkowany dostawczak.
+        </p>
+      </div>
+      <div class="item">
+        <div class="tag">Transparentność</div>
+        <h4>Waga na każdej śmieciarce</h4>
+        <p>
+          Pojazdy mają wagi pokładowe atestowane przez GUM. Rozliczasz się
+          dokładnie za to, co wyjedzie z Twojego placu — co do kilograma.
+        </p>
+      </div>
+      <div class="item">
+        <div class="tag">Zgodność</div>
+        <h4>Pełna ewidencja BDO</h4>
+        <p>
+          Wystawiamy KPO w 24 h, przekazujemy roczne sprawozdania, prowadzimy
+          ewidencję dla firm. Audyt środowiskowy nie powinien spędzać snu z
+          powiek.
+        </p>
+      </div>
+      <div class="item">
+        <div class="tag">Środowisko</div>
+        <h4>Sortownia w Niemcach</h4>
+        <p>
+          Własna linia sortownicza i biokompostownia. To, co da się odzyskać —
+          odzyskujemy. Reszta trafia do RIPOK z dokumentem.
+        </p>
+      </div>
+      <div class="item">
+        <div class="tag">Punktualność</div>
+        <h4>Okno czasowe ±60 min</h4>
+        <p>
+          Nie mówimy „kiedyś po południu”. Dostajesz okno czasowe i SMS na
+          15 minut przed przyjazdem śmieciarki.
+        </p>
+      </div>
+      <div class="item">
+        <div class="tag">Cena</div>
+        <h4>Cennik bez gwiazdek</h4>
+        <p>
+          Jeden cennik dla wszystkich klientów indywidualnych. Brak opłat
+          dodatkowych za podjazd, dojazd, wjazd, otworzenie bramy lub deszcz.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= PROCESS ============= -->
+<section class="process" data-screen-label="05 Proces">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="label">Jak to działa · /04</div>
+        <h2>Cztery kroki<br/>do czystego placu.</h2>
+      </div>
+      <p class="lede">
+        Od zgłoszenia do wystawienia dokumentu KPO — wszystko prowadzi jeden
+        opiekun, telefonicznie lub przez panel klienta.
+      </p>
+    </div>
+    <div class="process-grid">
+      <div class="step">
+        <h4>Zgłoszenie</h4>
+        <p>Telefon, formularz lub WhatsApp. Pytamy o adres, rodzaj odpadu i preferowaną datę.</p>
+      </div>
+      <div class="step">
+        <h4>Wycena</h4>
+        <p>W ciągu 30 minut otrzymujesz cenę netto/brutto i okno czasowe. Bez zaliczki.</p>
+      </div>
+      <div class="step">
+        <h4>Odbiór</h4>
+        <p>Podstawiamy pojemnik lub przyjeżdżamy śmieciarką. Ważymy na miejscu, zostawiamy potwierdzenie.</p>
+      </div>
+      <div class="step">
+        <h4>Rozliczenie</h4>
+        <p>e-Faktura z dokumentem KPO trafia mailem w 24 h. Zapłać BLIK-iem, kartą lub przelewem.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= CONTACT + PAYMENTS ============= -->
+<section class="contact" id="kontakt" data-screen-label="06 Kontakt">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="label">Kontakt · /05</div>
+        <h2>Zadzwoń, napisz,<br/>albo wpadnij.</h2>
+      </div>
+      <p class="lede">
+        Dyspozytornia odbiera od 7:00. Awarie, przepełnienia, zgłoszenia
+        nieplanowanych odbiorów — codziennie, też w soboty.
+      </p>
+    </div>
+
+    <div class="contact-grid">
+      <div class="contact-card">
+        <div class="kicker">Centrala · Lublin</div>
+        <h2>EkoDankor Sp. z o.o. — biuro i baza transportowa.</h2>
+        <p>
+          Najkrótsza droga do zamówienia odbioru: telefon do dyspozytorni.
+          Drugą najkrótszą poznasz, jeśli mieszkasz na Czechowie.
+        </p>
+        <div class="hero-actions">
+          <a class="btn btn-amber" href="tel:+48817400000">Zadzwoń teraz <span class="arr"></span></a>
+          <a class="btn btn-ghost" style="border-color: rgba(245,242,236,0.3); color: var(--cream);" href="/cdn-cgi/l/email-protection#2a48435f58456a4f41454e4b44414558045a46">Napisz e-mail</a>
+        </div>
+
+        <div class="contact-info">
+          <div>
+            <div class="lbl">Telefon</div>
+            <strong>+48 81 740 00 00</strong>
+            <div class="sm">Pn–Pt 7:00–18:00 · Sob 8:00–14:00</div>
+          </div>
+          <div>
+            <div class="lbl">E-mail</div>
+            <strong><a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="1b79726e69745b7e70747f7a75707469356b77">[email&#160;protected]</a></strong>
+            <div class="sm">Faktury: <a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="791f18120d0c0b00391c12161d181712160b570915">[email&#160;protected]</a></div>
+          </div>
+          <div>
+            <div class="lbl">Adres</div>
+            <strong>ul. Składowa 18</strong>
+            <div class="sm">20-313 Lublin</div>
+          </div>
+          <div>
+            <div class="lbl">Baza transportowa</div>
+            <strong>Niemce, ul. Polna 4</strong>
+            <div class="sm">21-025 · zjazd z DK19</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="pay-card" id="platnosci">
+        <div class="kicker">Płatności</div>
+        <h3>Konto bankowe i sposoby zapłaty.</h3>
+        <p>
+          Faktura przychodzi mailem od razu po odbiorze. Tytułem prosimy podać
+          numer faktury — to przyspieszy księgowanie i wystawienie KPO.
+        </p>
+
+        <div class="pay-row" aria-label="Dane do przelewu">
+          <div class="ln"><span>Odbiorca</span><strong>EkoDankor Sp. z o.o.</strong></div>
+          <div class="ln"><span>Numer konta</span><strong>91 1140 2004 0000 3102 8419 0027</strong></div>
+          <div class="ln"><span>SWIFT / IBAN</span><strong>BREXPLPWMBK · PL91...</strong></div>
+          <div class="ln"><span>Tytuł przelewu</span><strong>Nr faktury z e-faktury</strong></div>
+        </div>
+
+        <div class="pay-methods">
+          <span class="chip">BLIK</span>
+          <span class="chip">Przelew tradycyjny</span>
+          <span class="chip">Karta</span>
+          <span class="chip">Polecenie zapłaty</span>
+          <span class="chip">e-Faktura</span>
+          <span class="chip">Gotówka u kierowcy</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============= FOOTER ============= -->
+<footer class="footer" data-screen-label="07 Footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="brand-block">
+        <a class="logo" href="#" style="color: var(--cream);">
+          <span class="logo-mark"><span>E</span></span>
+          <span class="logo-text" style="color: var(--cream);">
+            EkoDankor
+            <small style="color: rgba(245,242,236,0.5);">Lubelszczyzna</small>
+          </span>
+        </a>
+        <p>
+          Lokalny operator gospodarki odpadami z bazą w Lublinie i punktem
+          przeładunkowym w Niemcach. Pracujemy zgodnie z BDO, BDS i Ustawą
+          o utrzymaniu czystości w gminach.
+        </p>
+      </div>
+      <div>
+        <h5>Nawigacja</h5>
+        <ul>
+          <li><a href="about.html">O firmie</a></li>
+          <li><a href="uslugi.html">Usługi</a></li>
+          <li><a href="konsultacja.html">Konsultacje</a></li>
+          <li><a href="#dlaczego-my">Dlaczego my</a></li>
+          <li><a href="#kontakt">Kontakt</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Usługi</h5>
+        <ul>
+          <li><a href="uslugi.html#komunalne">Odpady komunalne</a></li>
+          <li><a href="uslugi.html#bio">Bioodpady</a></li>
+          <li><a href="uslugi.html#budowlane">Gruz i budowlane</a></li>
+          <li><a href="uslugi.html#gabaryty">Wielkogabaryty</a></li>
+          <li><a href="konsultacja.html">Konsultacje BDO</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Dane firmy</h5>
+        <ul>
+          <li>NIP: 712-29-83-441</li>
+          <li>REGON: 060829441</li>
+          <li>BDO: 000041982</li>
+          <li>KRS: 0000412938</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2009–2026 EkoDankor Sp. z o.o.</span>
+      <span>Polityka prywatności · Regulamin · RODO</span>
+      <span>Made in Lublin</span>
+    </div>
+  </div>
+</footer>
+
+</main>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script type="module" src="truck.js"></script>
+
+</body>
+</html>

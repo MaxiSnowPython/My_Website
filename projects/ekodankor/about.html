@@ -1,0 +1,296 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>O firmie — EkoDankor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="shared.css" />
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+
+<div id="truck-stage" aria-hidden="true">
+  <canvas id="truck-canvas"></canvas>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="pill"><span class="dot"></span> Pn–Pt 7:00–18:00 · Lubelszczyzna</div>
+    <div class="topbar-links">
+      <a href="tel:+48817400000">+48 81 740 00 00</a>
+      <a href="mailto:biuro@ekodankor.pl">biuro@ekodankor.pl</a>
+      <a href="#kontakt">Lublin · ul. Składowa 18</a>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <a class="logo" href="index.html">
+      <span class="logo-mark"><span>E</span></span>
+      <span class="logo-text">EkoDankor<small>Odbiór odpadów · Lublin</small></span>
+    </a>
+    <nav class="nav" aria-label="Główna nawigacja">
+      <a href="about.html" class="active">O firmie</a>
+      <a href="uslugi.html">Usługi</a>
+      <a href="konsultacja.html">Konsultacje</a>
+      <a href="index.html#dlaczego-my">Dlaczego my</a>
+      <a href="index.html#kontakt">Kontakt</a>
+    </nav>
+    <div class="header-cta">
+      <div class="phone">+48 81 740 00 00<small>zgłoś odbiór</small></div>
+      <a class="btn btn-primary" href="index.html#kontakt">Zamów odbiór <span class="arr"></span></a>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+<!-- HERO -->
+<section class="hero-slim" style="background: var(--cream); border-bottom: 1px solid var(--green-line);">
+  <div class="container">
+    <span class="eyebrow"><span class="pulse"></span> EkoDankor · od 2009 r.</span>
+    <h1 style="font-family: var(--display); font-weight:700; font-size: clamp(46px,8vw,100px); line-height:.96; letter-spacing:-.035em; margin:28px 0 20px; color:var(--green-deep);">
+      Firma, która<br/><em style="font-style:normal; position:relative; display:inline-block; color:var(--green);">nie znika.<span style="position:absolute; left:0; right:0; bottom:6px; height:14px; background:var(--amber); z-index:-1; opacity:.85;"></span></em>
+    </h1>
+    <p style="max-width:600px; font-size:clamp(17px,1.5vw,20px); color:var(--ink-soft); line-height:1.55; margin:0 0 36px;">
+      17 lat obsługujemy Lubelszczyznę. Zaczynaliśmy od jednej śmieciarki i garażu w Niemcach.
+      Dziś mamy własną sortownię, 42 pojazdy i ponad 3 200 stałych umów.
+    </p>
+    <div style="display:flex; gap:14px; flex-wrap:wrap;">
+      <a class="btn btn-amber" href="uslugi.html">Zobacz nasze usługi <span class="arr"></span></a>
+      <a class="btn btn-ghost" href="konsultacja.html">Skonsultuj się z nami</a>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section style="background: var(--green); padding: clamp(48px,6vw,80px) 0; position:relative; z-index:5;">
+  <div class="container">
+    <div style="display:grid; grid-template-columns: repeat(4,1fr); gap:24px;">
+      <div style="border-top: 2px solid var(--amber); padding-top:20px;">
+        <div style="font-family:var(--display); font-weight:700; font-size:clamp(48px,5vw,72px); line-height:.95; letter-spacing:-.04em; color:var(--cream);">17<span style="font-size:.45em; color:var(--amber); margin-left:4px;">lat</span></div>
+        <div style="font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.16em; color:rgba(245,242,236,.6); margin-top:10px;">na rynku regionu</div>
+      </div>
+      <div style="border-top: 2px solid var(--amber); padding-top:20px;">
+        <div style="font-family:var(--display); font-weight:700; font-size:clamp(48px,5vw,72px); line-height:.95; letter-spacing:-.04em; color:var(--cream);">42</div>
+        <div style="font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.16em; color:rgba(245,242,236,.6); margin-top:10px;">pojazdy we flocie</div>
+      </div>
+      <div style="border-top: 2px solid var(--amber); padding-top:20px;">
+        <div style="font-family:var(--display); font-weight:700; font-size:clamp(48px,5vw,72px); line-height:.95; letter-spacing:-.04em; color:var(--cream);">3 200<span style="font-size:.45em; color:var(--amber); margin-left:4px;">+</span></div>
+        <div style="font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.16em; color:rgba(245,242,236,.6); margin-top:10px;">stałych klientów</div>
+      </div>
+      <div style="border-top: 2px solid var(--amber); padding-top:20px;">
+        <div style="font-family:var(--display); font-weight:700; font-size:clamp(48px,5vw,72px); line-height:.95; letter-spacing:-.04em; color:var(--cream);">68<span style="font-size:.45em; color:var(--amber); margin-left:4px;">%</span></div>
+        <div style="font-family:var(--mono); font-size:11px; text-transform:uppercase; letter-spacing:.16em; color:rgba(245,242,236,.6); margin-top:10px;">poziom recyklingu 2025</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- TIMELINE -->
+<section class="timeline">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="label">Historia · /01</div>
+        <h2>Skąd<br/>przyszliśmy.</h2>
+      </div>
+      <p class="lede">Od jednej śmieciarki do lidera rynku odpadów komunalnych w powiecie lubelskim.</p>
+    </div>
+
+    <div class="tl-grid">
+      <div class="tl-item right">
+        <div class="tl-year">2009</div>
+        <div class="tl-title">Założenie spółki</div>
+        <p class="tl-desc">EkoDankor Sp. z o.o. startuje z jednym pojazdem i umowami na trzy gminy. Baza — garaż przy ul. Polnej w Niemcach.</p>
+      </div>
+      <div class="tl-dot"></div>
+      <div class="tl-item"></div>
+
+      <div class="tl-item"></div>
+      <div class="tl-dot"></div>
+      <div class="tl-item">
+        <div class="tl-year">2013</div>
+        <div class="tl-title">Pierwsza sortownia</div>
+        <p class="tl-desc">Otwarcie własnej linii sortowniczej w Niemcach. Poziom recyklingu wzrósł z 18% do 41% w ciągu roku.</p>
+      </div>
+
+      <div class="tl-item right">
+        <div class="tl-year">2016</div>
+        <div class="tl-title">Kontrakt z Lublinem</div>
+        <p class="tl-desc">Wygranie przetargu na obsługę dwóch dzielnic Lublina — Czechów i Sławin. Flota rośnie do 18 pojazdów.</p>
+      </div>
+      <div class="tl-dot"></div>
+      <div class="tl-item"></div>
+
+      <div class="tl-item"></div>
+      <div class="tl-dot"></div>
+      <div class="tl-item">
+        <div class="tl-year">2019</div>
+        <div class="tl-title">Rejestracja w BDO</div>
+        <p class="tl-desc">Pełne wdrożenie systemu BDO, ewidencja elektroniczna i KPO wystawiane w 24 h. Wagi pokładowe w każdym pojeździe.</p>
+      </div>
+
+      <div class="tl-item right">
+        <div class="tl-year">2023</div>
+        <div class="tl-title">Nowa biokompostownia</div>
+        <p class="tl-desc">Uruchomienie biokompostowni o mocy 8 000 ton rocznie. Współpraca z gminnymi RIPOK-ami w całym województwie.</p>
+      </div>
+      <div class="tl-dot"></div>
+      <div class="tl-item"></div>
+
+      <div class="tl-item"></div>
+      <div class="tl-dot"></div>
+      <div class="tl-item">
+        <div class="tl-year">2026</div>
+        <div class="tl-title">Dziś</div>
+        <p class="tl-desc">42 pojazdy, 3 200+ umów, 98,4% odbiorów na czas. Nadal lokalna, nadal z Lublina.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- VALUES -->
+<section class="values">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="label">Wartości · /02</div>
+        <h2>Czym się<br/>kierujemy.</h2>
+      </div>
+      <p class="lede" style="color:rgba(245,242,236,.7);">Trzy zasady, które obowiązują od dnia założenia i nie zmieniły się przez 17 lat.</p>
+    </div>
+    <div class="values-grid">
+      <div class="why-list"><div class="item">
+        <div class="tag">Lokalność</div>
+        <h4>Stąd jesteśmy, tu działamy</h4>
+        <p>Żadnych call center z Warszawy. Dyspozytor, który odbiera telefon, zna każdą ulicę w gminie. Nasi kierowcy to mieszkańcy Lublina i okolic — to nie praca sezonowa, to zawód.</p>
+      </div></div>
+      <div class="why-list"><div class="item">
+        <div class="tag">Przejrzystość</div>
+        <h4>Cennik bez gwiazdek</h4>
+        <p>Płacisz dokładnie za to, co zostało wywiezione — do kilograma. Waga pokładowa atestowana przez GUM, KPO w 24 h, e-Faktura od razu. Żadnych ukrytych opłat.</p>
+      </div></div>
+      <div class="why-list"><div class="item">
+        <div class="tag">Środowisko</div>
+        <h4>68% odpadów wraca do obiegu</h4>
+        <p>Własna sortownia, biokompostownia i punkt przeładunkowy. Minimalizujemy ilość odpadów trafiających na składowisko. Bo nie tylko wywożenie ma znaczenie — ważne jest co z tym robimy.</p>
+      </div></div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="label">Infrastruktura · /03</div>
+        <h2>Co mamy<br/>za sobą.</h2>
+      </div>
+      <p class="lede">Własna baza, własna sortownia, własna flota — żadnych pośredników w łańcuchu.</p>
+    </div>
+    <div class="process-grid">
+      <div class="step">
+        <h4>Sortownia Niemce</h4>
+        <p>Linia sortownicza o mocy 25 000 ton rocznie. Automatyczne separatory frakcji, kabiny manualne dla odpadów nieustandaryzowanych.</p>
+      </div>
+      <div class="step">
+        <h4>Biokompostownia</h4>
+        <p>8 000 ton bioodpadów rocznie. Kompost trafia do lokalnych ogrodników i zakładów zieleni miejskiej w Lublinie.</p>
+      </div>
+      <div class="step">
+        <h4>Flota 42 pojazdów</h4>
+        <p>Śmieciarki tylnozaładowcze i boczne, prasokontenery KP-5 do KP-30, hakowce, pojazdysanitarne. Normy emisji Euro 6.</p>
+      </div>
+      <div class="step">
+        <h4>Baza Lublin</h4>
+        <p>Biuro dyspozytorskie przy ul. Składowej 18, czynne Pn–Pt 7–18. Awaryjna linia dyspozytorska aktywna 7 dni w tygodniu.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="padding: clamp(80px,10vw,130px) 0; background: var(--cream); position:relative; z-index:5;">
+  <div class="container">
+    <div class="contact-card" style="max-width:760px; margin:0 auto; text-align:center;">
+      <div class="kicker" style="text-align:center; display:block;">Gotowy na współpracę?</div>
+      <h2>Zadzwoń albo wyślij zapytanie — odpiszemy w ciągu 30 minut.</h2>
+      <p style="margin:0 auto 28px; max-width:38ch;">Wybierz usługę, podaj adres i datę — resztą zajmuje się nasz dyspozytor.</p>
+      <div style="display:flex; gap:14px; flex-wrap:wrap; justify-content:center;">
+        <a class="btn btn-amber" href="tel:+48817400000">+48 81 740 00 00 <span class="arr"></span></a>
+        <a class="btn btn-ghost" style="border-color:rgba(245,242,236,.3); color:var(--cream);" href="konsultacja.html">Formularz zapytania</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="page-truck-spacer"></div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="brand-block">
+        <a class="logo" href="index.html" style="color:var(--cream);">
+          <span class="logo-mark"><span>E</span></span>
+          <span class="logo-text" style="color:var(--cream);">EkoDankor<small style="color:rgba(245,242,236,.5);">Lubelszczyzna</small></span>
+        </a>
+        <p>Lokalny operator gospodarki odpadami z bazą w Lublinie i punktem przeładunkowym w Niemcach.</p>
+      </div>
+      <div>
+        <h5>Nawigacja</h5>
+        <ul>
+          <li><a href="about.html">O firmie</a></li>
+          <li><a href="uslugi.html">Usługi</a></li>
+          <li><a href="konsultacja.html">Konsultacje</a></li>
+          <li><a href="index.html#dlaczego-my">Dlaczego my</a></li>
+          <li><a href="index.html#kontakt">Kontakt</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Usługi</h5>
+        <ul>
+          <li><a href="uslugi.html#komunalne">Odpady komunalne</a></li>
+          <li><a href="uslugi.html#bio">Bioodpady</a></li>
+          <li><a href="uslugi.html#budowlane">Gruz i budowlane</a></li>
+          <li><a href="uslugi.html#gabaryty">Wielkogabaryty</a></li>
+          <li><a href="konsultacja.html">Konsultacje BDO</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Dane firmy</h5>
+        <ul>
+          <li>NIP: 712-29-83-441</li>
+          <li>REGON: 060829441</li>
+          <li>BDO: 000041982</li>
+          <li>KRS: 0000412938</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2009–2026 EkoDankor Sp. z o.o.</span>
+      <span>Polityka prywatności · Regulamin · RODO</span>
+      <span>Made in Lublin</span>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="truck.js"></script>
+</body>
+</html>

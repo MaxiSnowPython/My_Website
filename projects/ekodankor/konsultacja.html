@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Konsultacje BDO — EkoDankor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="shared.css" />
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+
+<div id="truck-stage" aria-hidden="true">
+  <canvas id="truck-canvas"></canvas>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="pill"><span class="dot"></span> Pn–Pt 7:00–18:00 · Lubelszczyzna</div>
+    <div class="topbar-links">
+      <a href="tel:+48817400000">+48 81 740 00 00</a>
+      <a href="mailto:bdo@ekodankor.pl">bdo@ekodankor.pl</a>
+      <a href="index.html#kontakt">Lublin · ul. Składowa 18</a>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <a class="logo" href="index.html">
+      <span class="logo-mark"><span>E</span></span>
+      <span class="logo-text">EkoDankor<small>Odbiór odpadów · Lublin</small></span>
+    </a>
+    <nav class="nav" aria-label="Główna nawigacja">
+      <a href="about.html">O firmie</a>
+      <a href="uslugi.html">Usługi</a>
+      <a href="konsultacja.html" class="active">Konsultacje</a>
+      <a href="index.html#dlaczego-my">Dlaczego my</a>
+      <a href="index.html#kontakt">Kontakt</a>
+    </nav>
+    <div class="header-cta">
+      <div class="phone">+48 81 740 00 00<small>zgłoś odbiór</small></div>
+      <a class="btn btn-primary" href="tel:+48817400000">Zadzwoń teraz <span class="arr"></span></a>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+<!-- HERO -->
+<section class="hero-slim" style="background:var(--cream); border-bottom:1px solid var(--green-line);">
+  <div class="container">
+    <span class="eyebrow"><span class="pulse"></span> Konsultacje BDO i KPO</span>
+    <h1 style="font-family:var(--display); font-weight:700; font-size:clamp(46px,8vw,100px); line-height:.96; letter-spacing:-.035em; margin:28px 0 20px; color:var(--green-deep);">
+      BDO bez<br/><em style="font-style:normal; position:relative; display:inline-block; color:var(--green);">papierowego chaosu.<span style="position:absolute; left:0; right:0; bottom:6px; height:14px; background:var(--amber); z-index:-1; opacity:.85;"></span></em>
+    </h1>
+    <p style="max-width:620px; font-size:clamp(17px,1.5vw,20px); color:var(--ink-soft); line-height:1.55; margin:0 0 36px;">
+      Rejestracja w BDO, kody odpadów, kwartalna ewidencja, KPO w 24 h.
+      Prowadzimy firmy przez obowiązki środowiskowe od A do Z — bez stresu i nadgodzin.
+    </p>
+    <div style="display:flex; gap:14px; flex-wrap:wrap;">
+      <a class="btn btn-amber" href="#formularz">Wyślij zapytanie <span class="arr"></span></a>
+      <a class="btn btn-ghost" href="tel:+48817400000">+48 81 740 00 00</a>
+    </div>
+  </div>
+</section>
+
+<!-- WHAT WE DO -->
+<section class="why" style="padding: clamp(80px,10vw,130px) 0;">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="label">Zakres konsultacji · /01</div>
+        <h2 style="color:var(--cream);">W czym<br/>pomagamy.</h2>
+      </div>
+      <p class="lede" style="color:rgba(245,242,236,.7);">Doradzamy w każdym etapie: od rejestracji przez bieżącą ewidencję po audyt roczny.</p>
+    </div>
+    <div class="why-list" style="grid-template-columns: repeat(3,1fr); margin-top:0;">
+      <div class="item">
+        <div class="tag">BDO · Rejestracja</div>
+        <h4>Rejestracja w systemie BDO</h4>
+        <p>Przeprowadzimy Twoją firmę przez proces rejestracji. Dobierzemy odpowiednie kody odpadów i rodzaje działalności — bez błędów, które kosztują czas i pieniądze.</p>
+      </div>
+      <div class="item">
+        <div class="tag">KPO · Dokumentacja</div>
+        <h4>Karty przekazania odpadów</h4>
+        <p>Wystawiamy KPO w 24 h po każdym odbiorze. Prowadzimy ewidencję dla firm, które nie mają własnego działu środowiskowego — miesięcznie lub kwartalnie.</p>
+      </div>
+      <div class="item">
+        <div class="tag">Ewidencja · Kwartalna</div>
+        <h4>Kwartalne sprawozdania</h4>
+        <p>Przygotowujemy raporty do systemu BDO za każdy kwartał. Sprawdzamy poprawność danych, uzupełniamy braki i składamy w Twoim imieniu (z pełnomocnictwem).</p>
+      </div>
+      <div class="item">
+        <div class="tag">Audyt · Środowiskowy</div>
+        <h4>Audyt środowiskowy</h4>
+        <p>Przegląd dotychczasowej ewidencji, identyfikacja błędów i korekta raportów. Przygotowanie do kontroli WIOŚ lub NIK — spokojnie, na czas, kompleksowo.</p>
+      </div>
+      <div class="item">
+        <div class="tag">Kody · Klasyfikacja</div>
+        <h4>Klasyfikacja odpadów</h4>
+        <p>Pomożemy ustalić właściwe kody odpadów (wg katalogu) dla każdej frakcji, która powstaje w Twojej firmie. Unikasz nieprawidłowej klasyfikacji i kar administracyjnych.</p>
+      </div>
+      <div class="item">
+        <div class="tag">Opieka · Stała</div>
+        <h4>Stała opieka środowiskowa</h4>
+        <p>Dla firm z regularnym przepływem odpadów oferujemy abonament: miesięczna ewidencja, KPO, kwartalne raporty i linia konsultacyjna w godzinach pracy.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="label">Jak to działa · /02</div>
+        <h2>Pierwsze kroki<br/>z nami.</h2>
+      </div>
+      <p class="lede">Od pierwszego kontaktu do pełnej dokumentacji — bez biurokratycznego labiryntu.</p>
+    </div>
+    <div class="process-grid">
+      <div class="step">
+        <h4>Zapytanie</h4>
+        <p>Wypełnij formularz poniżej lub zadzwoń. Pytamy o rodzaj firmy, branżę i rodzaje odpadów.</p>
+      </div>
+      <div class="step">
+        <h4>Analiza</h4>
+        <p>W ciągu 24 h oddzwaniamy z planem: co rejestrować, jakie kody, jaka częstotliwość ewidencji.</p>
+      </div>
+      <div class="step">
+        <h4>Wdrożenie</h4>
+        <p>Rejestrujemy firmę w BDO lub porządkujemy istniejący wpis. Przejmujemy prowadzenie ewidencji.</p>
+      </div>
+      <div class="step">
+        <h4>Stała opieka</h4>
+        <p>Składamy kwartalne raporty, wystawiamy KPO i jesteśmy dostępni w razie pytań lub kontroli.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FORM + INFO -->
+<section class="konsult" id="formularz">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="label">Zapytanie · /03</div>
+        <h2>Napisz do nas —<br/>odpiszemy w 24 h.</h2>
+      </div>
+      <p class="lede">Podaj podstawowe informacje o firmie, a nasz specjalista wróci z konkretnym planem działania.</p>
+    </div>
+
+    <div class="konsult-grid">
+      <div class="form-card">
+        <h3>Formularz zapytania</h3>
+        <p class="sub">Wszystkie dane są bezpieczne i nie będą udostępniane osobom trzecim.</p>
+
+        <form action="#" method="post" onsubmit="handleForm(event)">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="f-name">Imię i nazwisko</label>
+              <input id="f-name" type="text" name="name" placeholder="Jan Kowalski" required />
+            </div>
+            <div class="form-group">
+              <label for="f-phone">Telefon</label>
+              <input id="f-phone" type="tel" name="phone" placeholder="+48 500 000 000" required />
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="f-email">Adres e-mail</label>
+            <input id="f-email" type="email" name="email" placeholder="firma@example.pl" required />
+          </div>
+          <div class="form-group">
+            <label for="f-company">Nazwa firmy / NIP</label>
+            <input id="f-company" type="text" name="company" placeholder="EkoFirma Sp. z o.o. · NIP: ..." />
+          </div>
+          <div class="form-group">
+            <label for="f-service">Czego potrzebujesz?</label>
+            <select id="f-service" name="service">
+              <option value="">— Wybierz usługę —</option>
+              <option>Rejestracja w BDO</option>
+              <option>Prowadzenie ewidencji (KPO)</option>
+              <option>Kwartalne sprawozdania</option>
+              <option>Audyt środowiskowy</option>
+              <option>Stała opieka środowiskowa</option>
+              <option>Inne / nie wiem</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="f-msg">Dodatkowe informacje</label>
+            <textarea id="f-msg" name="msg" placeholder="Opisz krótko rodzaj firmy i jakie odpady generuje..."></textarea>
+          </div>
+          <button type="submit" class="btn btn-amber" style="width:100%; justify-content:center;">
+            Wyślij zapytanie <span class="arr"></span>
+          </button>
+        </form>
+      </div>
+
+      <div class="info-stack">
+        <div class="info-block">
+          <div class="ib-label">Kontakt bezpośredni</div>
+          <h4>Dział BDO i Środowisko</h4>
+          <p>Pn–Pt 8:00–16:00<br/>
+            <strong style="color:var(--green-deep);">+48 81 740 00 10</strong><br/>
+            <a href="mailto:bdo@ekodankor.pl" style="color:var(--amber);">bdo@ekodankor.pl</a>
+          </p>
+        </div>
+        <div class="info-block">
+          <div class="ib-label">Czas odpowiedzi</div>
+          <h4>Do 24 godzin roboczych</h4>
+          <p>Zapytania złożone przed godz. 14:00 w dni robocze otrzymują odpowiedź jeszcze tego samego dnia.</p>
+        </div>
+        <div class="info-block">
+          <div class="ib-label">Dla kogo</div>
+          <h4>Firmy każdej wielkości</h4>
+          <p>Obsługujemy jednoosobowe działalności, średnie przedsiębiorstwa i duże zakłady przemysłowe. Cena zależy od zakresu usługi.</p>
+        </div>
+        <div class="info-block" style="background:var(--green); border-color:transparent; color:var(--cream);">
+          <div class="ib-label" style="color:var(--amber);">Pierwsza konsultacja</div>
+          <h4 style="color:var(--cream);">Bezpłatna analiza wstępna</h4>
+          <p style="color:rgba(245,242,236,.78);">Pierwsze 30-minutowe spotkanie online jest zawsze bezpłatne. Oceniamy sytuację i proponujemy zakres współpracy bez żadnych zobowiązań.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="page-truck-spacer"></div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="brand-block">
+        <a class="logo" href="index.html" style="color:var(--cream);">
+          <span class="logo-mark"><span>E</span></span>
+          <span class="logo-text" style="color:var(--cream);">EkoDankor<small style="color:rgba(245,242,236,.5);">Lubelszczyzna</small></span>
+        </a>
+        <p>Lokalny operator gospodarki odpadami z bazą w Lublinie i punktem przeładunkowym w Niemcach.</p>
+      </div>
+      <div>
+        <h5>Nawigacja</h5>
+        <ul>
+          <li><a href="about.html">O firmie</a></li>
+          <li><a href="uslugi.html">Usługi</a></li>
+          <li><a href="konsultacja.html">Konsultacje</a></li>
+          <li><a href="index.html#dlaczego-my">Dlaczego my</a></li>
+          <li><a href="index.html#kontakt">Kontakt</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Usługi</h5>
+        <ul>
+          <li><a href="uslugi.html#komunalne">Odpady komunalne</a></li>
+          <li><a href="uslugi.html#bio">Bioodpady</a></li>
+          <li><a href="uslugi.html#budowlane">Gruz i budowlane</a></li>
+          <li><a href="uslugi.html#gabaryty">Wielkogabaryty</a></li>
+          <li><a href="konsultacja.html">Konsultacje BDO</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Dane firmy</h5>
+        <ul>
+          <li>NIP: 712-29-83-441</li>
+          <li>REGON: 060829441</li>
+          <li>BDO: 000041982</li>
+          <li>KRS: 0000412938</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2009–2026 EkoDankor Sp. z o.o.</span>
+      <span>Polityka prywatności · Regulamin · RODO</span>
+      <span>Made in Lublin</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+function handleForm(e) {
+  e.preventDefault();
+  const btn = e.target.querySelector('button[type="submit"]');
+  btn.textContent = '✓ Zapytanie wysłane!';
+  btn.style.background = 'var(--green)';
+  btn.style.color = 'var(--cream)';
+  btn.disabled = true;
+}
+</script>
+<script type="module" src="truck.js"></script>
+</body>
+</html>

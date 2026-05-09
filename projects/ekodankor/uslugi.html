@@ -1,0 +1,286 @@
+<!doctype html>
+<html lang="pl">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Usługi — EkoDankor</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link rel="stylesheet" href="shared.css" />
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+</head>
+<body>
+
+<div id="truck-stage" aria-hidden="true">
+  <canvas id="truck-canvas"></canvas>
+</div>
+
+<!-- TOPBAR -->
+<div class="topbar">
+  <div class="topbar-inner">
+    <div class="pill"><span class="dot"></span> Pn–Pt 7:00–18:00 · Lubelszczyzna</div>
+    <div class="topbar-links">
+      <a href="tel:+48817400000">+48 81 740 00 00</a>
+      <a href="mailto:biuro@ekodankor.pl">biuro@ekodankor.pl</a>
+      <a href="index.html#kontakt">Lublin · ul. Składowa 18</a>
+    </div>
+  </div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-inner">
+    <a class="logo" href="index.html">
+      <span class="logo-mark"><span>E</span></span>
+      <span class="logo-text">EkoDankor<small>Odbiór odpadów · Lublin</small></span>
+    </a>
+    <nav class="nav" aria-label="Główna nawigacja">
+      <a href="about.html">O firmie</a>
+      <a href="uslugi.html" class="active">Usługi</a>
+      <a href="konsultacja.html">Konsultacje</a>
+      <a href="index.html#dlaczego-my">Dlaczego my</a>
+      <a href="index.html#kontakt">Kontakt</a>
+    </nav>
+    <div class="header-cta">
+      <div class="phone">+48 81 740 00 00<small>zgłoś odbiór</small></div>
+      <a class="btn btn-primary" href="index.html#kontakt">Zamów odbiór <span class="arr"></span></a>
+    </div>
+  </div>
+</header>
+
+<main class="page">
+
+<!-- HERO -->
+<section class="hero-slim" style="background:var(--cream); border-bottom:1px solid var(--green-line);">
+  <div class="container">
+    <span class="eyebrow"><span class="pulse"></span> Usługi · EkoDankor</span>
+    <h1 style="font-family:var(--display); font-weight:700; font-size:clamp(46px,8vw,100px); line-height:.96; letter-spacing:-.035em; margin:28px 0 20px; color:var(--green-deep);">
+      Co odbieramy<br/>i <em style="font-style:normal; position:relative; display:inline-block; color:var(--green);">ile to kosztuje.<span style="position:absolute; left:0; right:0; bottom:6px; height:14px; background:var(--amber); z-index:-1; opacity:.85;"></span></em>
+    </h1>
+    <p style="max-width:620px; font-size:clamp(17px,1.5vw,20px); color:var(--ink-soft); line-height:1.55; margin:0 0 36px;">
+      Rozliczamy wagowo lub ryczałtem — transparentny cennik dla każdej usługi.
+      Dobieramy pojemnik i harmonogram pod realne potrzeby: dom, blok, sklep, budowa.
+    </p>
+    <div style="display:flex; gap:14px; flex-wrap:wrap;">
+      <a class="btn btn-amber" href="konsultacja.html">Zapytaj o cenę <span class="arr"></span></a>
+      <a class="btn btn-ghost" href="tel:+48817400000">+48 81 740 00 00</a>
+    </div>
+  </div>
+</section>
+
+<!-- TICKER -->
+<div class="ticker" aria-hidden="true">
+  <div class="ticker-track">
+    <span>Komunalne</span><span>Biodegradowalne</span><span>Budowlane</span><span>Wielkogabaryty</span>
+    <span>Niebezpieczne</span><span>Kontenery</span><span>Sezonowe</span><span>e-Faktura</span>
+    <span>Komunalne</span><span>Biodegradowalne</span><span>Budowlane</span><span>Wielkogabaryty</span>
+    <span>Niebezpieczne</span><span>Kontenery</span><span>Sezonowe</span><span>e-Faktura</span>
+  </div>
+</div>
+
+<!-- SERVICE DETAIL -->
+<section class="service-detail">
+  <div class="container">
+
+    <!-- 01 KOMUNALNE -->
+    <div class="service-item" id="komunalne">
+      <div class="service-item-text">
+        <div class="sid">01 / Komunalne</div>
+        <h3>Odpady bytowe komunalne</h3>
+        <p>Regularny odbiór z gospodarstw domowych, wspólnot mieszkaniowych i firm. Pojemniki 120 / 240 / 1100 l, worki na frakcje oraz big-bagi. Harmonogramy gminne i indywidualne — co tydzień, co dwa tygodnie, lub na wezwanie.</p>
+        <div class="price-tag"><span class="from">od</span> 19 zł / m³</div>
+      </div>
+      <div class="service-item-img">
+        <div class="img-icon">🗑️</div>
+        <div class="img-label">Odpady komunalne</div>
+        <div class="img-sub">Pojemniki 120–1100 l · harmonogram indyw.</div>
+      </div>
+    </div>
+
+    <!-- 02 BIO -->
+    <div class="service-item" id="bio">
+      <div class="service-item-text">
+        <div class="sid">02 / Biodegradowalne</div>
+        <h3>Odpady biodegradowalne</h3>
+        <p>Brązowy pojemnik na resztki kuchenne, skoszoną trawę, liście i rozdrobnione gałęzie. Wywozimy do biokompostowni partnerskiej w Rokitnie. W sezonie wiosenno-letnim odbiory nawet co 7 dni, jesienią według harmonogramu.</p>
+        <div class="price-tag"><span class="from">od</span> 150 zł / odbiór</div>
+      </div>
+      <div class="service-item-img">
+        <div class="img-icon">♻️</div>
+        <div class="img-label">Bioodpady</div>
+        <div class="img-sub">Co 7 dni · sezon wiosna–jesień</div>
+      </div>
+    </div>
+
+    <!-- 03 BUDOWLANE -->
+    <div class="service-item" id="budowlane">
+      <div class="service-item-text">
+        <div class="sid">03 / Budowlane i gruz</div>
+        <h3>Odpady budowlane i gruz</h3>
+        <p>Kontenery KP-5, KP-7 i KP-10 podstawiamy w 24 h. Przyjmujemy beton, cegłę, ceramikę, ziemię, drewno, styropian i odpady mieszane po remontach. Ważenie na placu zwrotu, KPO w 24 h.</p>
+        <div class="price-tag"><span class="from">od</span> 250 zł / kontener 5 m³</div>
+      </div>
+      <div class="service-item-img">
+        <div class="img-icon">🏗️</div>
+        <div class="img-label">Gruz i odpady budowlane</div>
+        <div class="img-sub">Kontenery KP-5 do KP-10 · dostawa 24 h</div>
+      </div>
+    </div>
+
+    <!-- 04 GABARYTY -->
+    <div class="service-item" id="gabaryty">
+      <div class="service-item-text">
+        <div class="sid">04 / Wielkogabaryty</div>
+        <h3>Meble i wielkogabaryty</h3>
+        <p>Sofy, materace, szafy, sprzęt AGD, opony, okna, drzwi — odbierzemy to z mieszkania lub z chodnika. Wystarczy zdjęcie i adres, wycena oddzwonimy w 30 minut. Możliwość odbioru w weekend.</p>
+        <div class="price-tag"><span class="from"></span> Wycena indywidualna</div>
+      </div>
+      <div class="service-item-img">
+        <div class="img-icon">🛋️</div>
+        <div class="img-label">Meble i duże przedmioty</div>
+        <div class="img-sub">Wycena w 30 min · możliwy weekend</div>
+      </div>
+    </div>
+
+    <!-- 05 NIEBEZPIECZNE -->
+    <div class="service-item" id="niebezpieczne">
+      <div class="service-item-text">
+        <div class="sid">05 / Niebezpieczne</div>
+        <h3>Odpady niebezpieczne</h3>
+        <p>Oleje silnikowe i przepracowane, baterie i akumulatory, świetlówki, ZSEiE (sprzęt elektryczny), farby i rozpuszczalniki. Odbiór wyłącznie dla firm z ważną umową. Pełna dokumentacja KPO i BDO.</p>
+        <div class="price-tag"><span class="from"></span> Tylko dla firm · KPO</div>
+      </div>
+      <div class="service-item-img">
+        <div class="img-icon">⚠️</div>
+        <div class="img-label">Odpady niebezpieczne</div>
+        <div class="img-sub">Wyłącznie dla firm · pełna dokumentacja</div>
+      </div>
+    </div>
+
+    <!-- 06 KONTENERY -->
+    <div class="service-item" id="kontenery">
+      <div class="service-item-text">
+        <div class="sid">06 / Wynajem kontenerów</div>
+        <h3>Kontenery i prasokontenery</h3>
+        <p>Wynajem kontenerów KP-5 do KP-30 dla firm i inwestycji budowlanych. Prasokontenery do dużych obiektów handlowych i przemysłowych — rozliczenie za dobę lub tydzień, wywóz wliczony w cenę.</p>
+        <div class="price-tag"><span class="from">od</span> 45 zł / doba</div>
+      </div>
+      <div class="service-item-img">
+        <div class="img-icon">📦</div>
+        <div class="img-label">Wynajem kontenerów</div>
+        <div class="img-sub">KP-5 do KP-30 · rozliczenie doby lub tygodnia</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- PROCESS -->
+<section class="process">
+  <div class="container">
+    <div class="section-head">
+      <div>
+        <div class="label">Jak zamawiać · /04</div>
+        <h2>Cztery kroki<br/>do czystego placu.</h2>
+      </div>
+      <p class="lede">Od zgłoszenia do wystawienia dokumentu KPO — wszystko prowadzi jeden opiekun.</p>
+    </div>
+    <div class="process-grid">
+      <div class="step">
+        <h4>Zgłoszenie</h4>
+        <p>Telefon, formularz lub WhatsApp. Pytamy o adres, rodzaj odpadu i preferowaną datę.</p>
+      </div>
+      <div class="step">
+        <h4>Wycena</h4>
+        <p>W ciągu 30 minut otrzymujesz cenę netto/brutto i okno czasowe. Bez zaliczki.</p>
+      </div>
+      <div class="step">
+        <h4>Odbiór</h4>
+        <p>Podstawiamy pojemnik lub przyjeżdżamy śmieciarką. Ważymy na miejscu, zostawiamy potwierdzenie.</p>
+      </div>
+      <div class="step">
+        <h4>Rozliczenie</h4>
+        <p>e-Faktura z dokumentem KPO trafia mailem w 24 h. Zapłać BLIK-iem, kartą lub przelewem.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section style="padding: clamp(80px,10vw,130px) 0; background:var(--cream); position:relative; z-index:5;">
+  <div class="container">
+    <div class="contact-card" style="max-width:760px; margin:0 auto; text-align:center;">
+      <div class="kicker" style="text-align:center; display:block;">Nie znalazłeś swojej usługi?</div>
+      <h2>Zadzwoń — dobierzemy rozwiązanie pod Twoje potrzeby.</h2>
+      <p style="margin:0 auto 28px; max-width:42ch;">Obsługujemy niestandardowe zlecenia: duże inwestycje, cykliczne umowy roczne, obsługa wspólnot i firm.</p>
+      <div style="display:flex; gap:14px; flex-wrap:wrap; justify-content:center;">
+        <a class="btn btn-amber" href="konsultacja.html">Formularz zapytania <span class="arr"></span></a>
+        <a class="btn btn-ghost" style="border-color:rgba(245,242,236,.3); color:var(--cream);" href="tel:+48817400000">+48 81 740 00 00</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<div class="page-truck-spacer"></div>
+
+</main>
+
+<!-- FOOTER -->
+<footer class="footer">
+  <div class="container">
+    <div class="footer-top">
+      <div class="brand-block">
+        <a class="logo" href="index.html" style="color:var(--cream);">
+          <span class="logo-mark"><span>E</span></span>
+          <span class="logo-text" style="color:var(--cream);">EkoDankor<small style="color:rgba(245,242,236,.5);">Lubelszczyzna</small></span>
+        </a>
+        <p>Lokalny operator gospodarki odpadami z bazą w Lublinie i punktem przeładunkowym w Niemcach.</p>
+      </div>
+      <div>
+        <h5>Nawigacja</h5>
+        <ul>
+          <li><a href="about.html">O firmie</a></li>
+          <li><a href="uslugi.html">Usługi</a></li>
+          <li><a href="konsultacja.html">Konsultacje</a></li>
+          <li><a href="index.html#dlaczego-my">Dlaczego my</a></li>
+          <li><a href="index.html#kontakt">Kontakt</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Usługi</h5>
+        <ul>
+          <li><a href="#komunalne">Odpady komunalne</a></li>
+          <li><a href="#bio">Bioodpady</a></li>
+          <li><a href="#budowlane">Gruz i budowlane</a></li>
+          <li><a href="#gabaryty">Wielkogabaryty</a></li>
+          <li><a href="konsultacja.html">Konsultacje BDO</a></li>
+        </ul>
+      </div>
+      <div>
+        <h5>Dane firmy</h5>
+        <ul>
+          <li>NIP: 712-29-83-441</li>
+          <li>REGON: 060829441</li>
+          <li>BDO: 000041982</li>
+          <li>KRS: 0000412938</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <span>© 2009–2026 EkoDankor Sp. z o.o.</span>
+      <span>Polityka prywatności · Regulamin · RODO</span>
+      <span>Made in Lublin</span>
+    </div>
+  </div>
+</footer>
+
+<script type="module" src="truck.js"></script>
+</body>
+</html>
