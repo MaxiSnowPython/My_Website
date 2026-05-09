@@ -868,16 +868,16 @@
       </div>
 
       <div class="project-card" onclick="openModal(2)">
-        <div class="card-banner" style="background:linear-gradient(135deg,#0891b2,#2dd4bf)">
-          <span class="card-banner-emoji">🤖</span>
+        <div class="card-banner" style="background:linear-gradient(135deg,#0891b2,#0e7490)">
+          <span class="card-banner-emoji">🔍</span>
         </div>
         <div class="card-body">
-          <div class="card-title">Telegram Bot</div>
-          <p class="card-desc">Bot with inline buttons, FSM dialogs and PostgreSQL storage.</p>
+          <div class="card-title">Job Hunter Bot</div>
+          <p class="card-desc">Telegram bot that scrapes 5 job boards and pings you the moment a matching vacancy appears.</p>
           <div class="tags">
             <span class="tag">aiogram</span>
+            <span class="tag">BeautifulSoup</span>
             <span class="tag">PostgreSQL</span>
-            <span class="tag">Python</span>
           </div>
         </div>
       </div>
@@ -1039,9 +1039,9 @@
         images: [],
       },
       {
-        icon: "🤖", title: "Telegram Bot",
-        tags: ["aiogram", "PostgreSQL", "Python"],
-        desc: "A Telegram bot built with aiogram. Supports inline keyboards, FSM dialogs, PostgreSQL storage for user data, and a set of admin commands for managing users and broadcasting messages. Fully deployed with Docker.",
+        icon: "🔍", title: "Job Hunter Bot",
+        tags: ["aiogram", "BeautifulSoup", "PostgreSQL", "Python", "asyncio"],
+        desc: "A Telegram bot that automatically scrapes 5 job boards (hh.ru, LinkedIn, Indeed, Habr Career, and Djinni) on a schedule and filters listings by your keywords, salary range, and location. The moment a matching vacancy appears it sends you a Telegram notification with the job title, company, salary, and a direct link — no manual searching required. User preferences and seen listings are stored in PostgreSQL to avoid duplicate alerts.",
         links: [{ label: "GitHub →", url: "#" }],
         images: [],
       },
