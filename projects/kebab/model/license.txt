@@ -1,0 +1,11 @@
+Model Information:
+* title:	Kebab
+* source:	https://sketchfab.com/3d-models/kebab-0dad8550cccb4149a12f1f393e64b4b3
+* author:	Enlil Scan (https://sketchfab.com/enlil.scan)
+
+Model License:
+* license type:	CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
+* requirements:	Author must be credited. Commercial use is allowed.
+
+If you use this 3D model in your project be sure to copy paste this credit wherever you share it:
+This work is based on "Kebab" (https://sketchfab.com/3d-models/kebab-0dad8550cccb4149a12f1f393e64b4b3) by Enlil Scan (https://sketchfab.com/enlil.scan) licensed under CC-BY-4.0 (http://creativecommons.org/licenses/by/4.0/)
