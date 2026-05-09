@@ -594,6 +594,58 @@
       border-radius: 9999px;
     }
 
+    /* ── EKODANKOR CARD PREVIEW ── */
+    .ekodankor-preview {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      gap: 14px;
+    }
+    .eko-logo-mark {
+      width: 44px; height: 44px;
+      border-radius: 10px;
+      background: #1a3a2a;
+      border: 2px solid rgba(232,160,32,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: Georgia, serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #f5f2ec;
+      position: relative;
+      overflow: hidden;
+      flex-shrink: 0;
+    }
+    .eko-logo-mark::after {
+      content: "";
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 8px;
+      background: #e8a020;
+    }
+    .eko-text {
+      display: flex;
+      flex-direction: column;
+    }
+    .eko-name {
+      font-family: Georgia, serif;
+      font-size: 1.4rem;
+      font-weight: 700;
+      color: #f5f2ec;
+      letter-spacing: -0.02em;
+      line-height: 1.1;
+    }
+    .eko-sub {
+      font-size: 0.6rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #e8a020;
+      margin-top: 3px;
+    }
+
     /* ── SITE PREVIEW OVERLAY (browser window) ── */
     #site-overlay {
       display: none;
@@ -882,17 +934,25 @@
         </div>
       </div>
 
-      <div class="project-card" onclick="openModal(3)">
-        <div class="card-banner" style="background:linear-gradient(135deg,#be185d,#f472b6)">
-          <span class="card-banner-emoji">🛒</span>
+      <!-- ★ LIVE SITE — EKODANKOR ★ -->
+      <div class="project-card live-card" onclick="openSite('http://localhost:8772', 'ekodankor / localhost:8772')">
+        <div class="card-banner" style="background:linear-gradient(135deg,#112418 0%,#1a3a2a 60%,#0f2018 100%)">
+          <div class="live-badge"><span class="live-dot"></span> Live Site</div>
+          <div class="ekodankor-preview">
+            <div class="eko-logo-mark">E</div>
+            <div class="eko-text">
+              <span class="eko-name">EkoDankor</span>
+              <span class="eko-sub">Wywóz odpadów · Lublin</span>
+            </div>
+          </div>
         </div>
         <div class="card-body">
-          <div class="card-title">Online Store</div>
-          <p class="card-desc">E-commerce backend with cart, orders & Stripe payments.</p>
+          <div class="card-title">EkoDankor — Waste Service</div>
+          <p class="card-desc">Company landing page with scroll-driven 3D garbage truck, subpages & contact form.</p>
           <div class="tags">
-            <span class="tag">Django</span>
-            <span class="tag">Stripe</span>
-            <span class="tag">Docker</span>
+            <span class="tag">Three.js</span>
+            <span class="tag">HTML/CSS</span>
+            <span class="tag">JavaScript</span>
           </div>
         </div>
       </div>
